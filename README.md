@@ -14,6 +14,10 @@ Målet med dette repository er at give gruppen et fælles udgangspunkt, som vi k
 
 Følgende er på plads:
 
+- Schema med små tweaks i forhold til præsentation
+- Data fra WC 2022 playoffs
+
+
 - et virtuelt Python-miljø (`.venv`)
 - installation af nødvendige Python-pakker
 - en lokal PostgreSQL-database
