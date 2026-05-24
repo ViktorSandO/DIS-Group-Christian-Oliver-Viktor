@@ -14,6 +14,10 @@ Målet med dette repository er at give gruppen et fælles udgangspunkt, som vi k
 
 Følgende er på plads:
 
+- Schema med små tweaks i forhold til præsentation
+- Data fra WC 2022 playoffs
+
+
 - et virtuelt Python-miljø (`.venv`)
 - installation af nødvendige Python-pakker
 - en lokal PostgreSQL-database
@@ -54,83 +58,6 @@ For at køre projektet lokalt skal du have følgende installeret:
 
 På Mac kan PostgreSQL f.eks. installeres med Homebrew.
 
-## Opsætning
-
-### 1. Clone repository
-
-```bash
-git clone <repo-url>
-cd "Databases and Information Systems"
-```
-
-### 2. Opret virtuelt miljø
-
-```bash
-python3 -m venv .venv
-```
-
-### 3. Aktivér miljøet
-
-```bash
-source .venv/bin/activate
-```
-
-Når miljøet er aktivt, vil terminalen typisk vise `(.venv)` foran linjen.
-
-### 4. Installér pakker
-
-```bash
-python -m pip install --upgrade pip
-python -m pip install flask flask-sqlalchemy 'psycopg[binary]' python-dotenv
-pip freeze > requirements.txt
-```
-
-Alternativt, hvis `requirements.txt` allerede findes og er opdateret:
-
-```bash
-pip install -r requirements.txt
-```
-
-## PostgreSQL
-
-Projektet bruger PostgreSQL som database.
-
-PostgreSQL skal være installeret og køre lokalt.
-
-Eksempel på opstart med Homebrew:
-
-```bash
-brew services start postgresql@18
-```
-
-### Opret database og bruger
-
-Åbn PostgreSQL:
-
-```bash
-psql postgres
-```
-
-Kør derefter disse kommandoer:
-
-```sql
-CREATE ROLE plt271 WITH LOGIN PASSWORD 'tlbjwfplt';
-CREATE DATABASE dis_db OWNER plt271;
-\c dis_db
-ALTER SCHEMA public OWNER TO plt271;
-\q
-```
-
-Hvis databasen allerede findes, kan det i stedet være nok at give brugeren adgang:
-
-```sql
-CREATE ROLE plt271 WITH LOGIN PASSWORD 'tlbjwfplt';
-GRANT ALL PRIVILEGES ON DATABASE dis_db TO plt271;
-ALTER DATABASE dis_db OWNER TO plt271;
-\c dis_db
-ALTER SCHEMA public OWNER TO plt271;
-\q
-```
 
 ## Miljøvariabler
 
