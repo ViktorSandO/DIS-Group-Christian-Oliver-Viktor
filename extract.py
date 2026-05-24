@@ -196,6 +196,8 @@ def get_minutes_from_lineup(player):
 
 
 
+
+
 def extract_data(knockout_matches):
     random.seed(840)
 
@@ -307,6 +309,19 @@ def extract_data(knockout_matches):
 
         events_by_id = {e["id"]: e for e in events}
 
+        def get_related_goalkeeper_name(shot_event):
+            for related_id in shot_event.get("related_events", []):
+                related_event = events_by_id.get(related_id)
+
+                if not related_event:
+                    continue
+
+                if related_event["type"]["name"] == "Goal Keeper":
+                    return related_event["player"]["name"]
+
+            return None
+
+
         for player_name, player in players.items():
             if player["team"] == home_team:
                 player_stats[player_name][match_id]["clean_sheet"] = home_clean_sheet
@@ -323,14 +338,32 @@ def extract_data(knockout_matches):
             event_type = event["type"]["name"]
             player_name = event["player"]["name"]
 
-            # Goals and shots on target
+
+            # Goals, shots on target, and penalty shootout saves
             if event_type == "Shot":
                 shot = event.get("shot", {})
                 outcome = shot.get("outcome", {}).get("name")
+                shot_type = shot.get("type", {}).get("name")
+                period = event.get("period")
 
+                is_penalty_shootout = period == 5 and shot_type == "Penalty"
+
+                # Fantasy rule:
+                # Any shootout penalty that is NOT scored counts as a penalty save.
+                if is_penalty_shootout:
+                    goalkeeper_name = get_related_goalkeeper_name(event)
+
+                    if goalkeeper_name and outcome != "Goal":
+                        player_stats[goalkeeper_name][match_id]["penalty_saves"] += 1
+
+                    # Do not count shootout penalties as normal goals or shots
+                    continue
+
+                # Normal shots on target
                 if outcome in ["Goal", "Saved", "Saved to Post"]:
                     player_stats[player_name][match_id]["shots_on_target"] += 1
 
+                # Normal goals
                 if outcome == "Goal":
                     player_stats[player_name][match_id]["goals"] += 1
 
@@ -342,6 +375,11 @@ def extract_data(knockout_matches):
                         if pass_event and "player" in pass_event:
                             assist_player = pass_event["player"]["name"]
                             player_stats[assist_player][match_id]["assists"] += 1
+
+
+
+
+
 
             # Key passes
             elif event_type == "Pass":
@@ -371,10 +409,6 @@ def extract_data(knockout_matches):
                 if gk_type in ["Shot Saved", "Shot Saved Off T"]:
                     player_stats[player_name][match_id]["saves"] += 1
 
-                    # Penalty save detection is not always simple.
-                    # This checks whether the goalkeeper event itself says it came from a penalty.
-                    if gk.get("shot_saved_to_post") or gk.get("penalty_saved_to_post"):
-                        player_stats[player_name][match_id]["penalty_saves"] += 1
 
     return teams, players, matches_out, player_stats
 
