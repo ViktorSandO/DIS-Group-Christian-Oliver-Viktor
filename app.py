@@ -1,32 +1,50 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
-from dotenv import load_dotenv
-import os
+from flask import Flask, render_template
+import psycopg2
+import psycopg2.extras
 
-load_dotenv()
+app = Flask(__name__)
 
-db = SQLAlchemy()
 
-def create_app():
-    app = Flask(__name__)
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+def get_db_connection():
+    return psycopg2.connect(
+        host="localhost",
+        database="worldcup_fantasy",
+        user="postgres",
+        password="zbv82pjh",
+        port=5432
+    )
 
-    db.init_app(app)
 
-    @app.route("/")
-    def home():
-        return "Flask virker"
+@app.route("/")
+def index():
+    return "World Cup Fantasy App is running!"
 
-    @app.route("/db-test")
-    def db_test():
-        db.session.execute(text("SELECT 1"))
-        return "PostgreSQL-forbindelse virker"
 
-    return app
+@app.route("/players")
+def players():
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-app = create_app()
+    cur.execute("""
+        SELECT 
+            p.player_id,
+            p.name,
+            p.position,
+            nt.country,
+            p.price
+        FROM players p
+        JOIN national_teams nt 
+            ON p.national_team_id = nt.national_team_id
+        ORDER BY nt.country, p.position, p.name;
+    """)
+
+    players = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template("players.html", players=players)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

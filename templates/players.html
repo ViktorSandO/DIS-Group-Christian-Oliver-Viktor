@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World Cup Fantasy</title>
+</head>
+<body>
+    <h1>Available Players</h1>
+
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Country</th>
+            <th>Price</th>
+        </tr>
+
+        {% for player in players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ player.country }}</td>
+            <td>{{ player.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

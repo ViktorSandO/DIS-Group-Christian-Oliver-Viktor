@@ -107,17 +107,46 @@ def get_position_from_lineup(player):
 
     return "MID"
 
+# Player price is based on position, team strength, and minutes played (as a proxy for importance in the team).
+def calculate_player_price(player, rank_in_team):
+    base_prices = {
+        "GK": 6,
+        "DEF": 5,
+        "MID": 5,
+        "FWD": 7
+    }
 
-def price_from_position(position):
-    if position == "GK":
-        return random.randint(4, 7)
-    if position == "DEF":
-        return random.randint(5, 8)
-    if position == "MID":
-        return random.randint(6, 10)
-    if position == "FWD":
-        return random.randint(7, 12)
-    return 6
+    strong_teams = {
+        "Argentina",
+        "France",
+        "Brazil",
+        "England",
+        "Portugal",
+        "Spain"
+    }
+
+    good_teams = {
+        "Netherlands",
+        "Croatia",
+        "Morocco"
+    }
+
+    price = base_prices.get(player["position"], 6)
+
+    if player["team"] in strong_teams:
+        price += 2
+    elif player["team"] in good_teams:
+        price += 1
+
+    if rank_in_team <= 4:
+        price += 2
+    elif rank_in_team <= 8:
+        price += 1
+
+    return price
+
+
+
 
 
 def download_statsbomb_data():
@@ -252,7 +281,7 @@ def extract_data(knockout_matches):
                         "name": player_name,
                         "team": team_name,
                         "position": position,
-                        "price": price_from_position(position),
+                        "price": 0,
                         "minutes": 0
                     }
 
@@ -281,7 +310,8 @@ def extract_data(knockout_matches):
             reverse=True
         )
 
-        for name, player in team_players[:MAX_PLAYERS_PER_TEAM]:
+        for rank, (name, player) in enumerate(team_players[:MAX_PLAYERS_PER_TEAM], start=1):
+            player["price"] = calculate_player_price(player, rank)
             filtered_players[name] = player
 
     players = filtered_players
@@ -353,10 +383,17 @@ def extract_data(knockout_matches):
                 if is_penalty_shootout:
                     goalkeeper_name = get_related_goalkeeper_name(event)
 
-                    if goalkeeper_name and outcome != "Goal":
-                        player_stats[goalkeeper_name][match_id]["penalty_saves"] += 1
+                     # Scored shootout penalty counts as a goal for the shooter
+                    if outcome == "Goal":
+                        player_stats[player_name][match_id]["goals"] += 1
+                        player_stats[player_name][match_id]["shots_on_target"] += 1
 
-                    # Do not count shootout penalties as normal goals or shots
+                    # Missed shootout penalty counts as a penalty save for the goalkeeper
+                    else:
+                        if goalkeeper_name:
+                            player_stats[goalkeeper_name][match_id]["penalty_saves"] += 1
+
+                    # Shootout penalties are fully handled here
                     continue
 
                 # Normal shots on target
