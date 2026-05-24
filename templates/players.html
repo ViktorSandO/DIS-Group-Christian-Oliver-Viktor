@@ -12,6 +12,7 @@
             <th>Position</th>
             <th>Country</th>
             <th>Price</th>
+            <th>Select</th>
         </tr>
 
         {% for player in players %}
@@ -20,6 +21,11 @@
             <td>{{ player.position }}</td>
             <td>{{ player.country }}</td>
             <td>{{ player.price }}</td>
+            <td>
+                <form action="/add-player/{{ player.player_id }}" method="POST">
+                    <button type="submit">Add</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </table>

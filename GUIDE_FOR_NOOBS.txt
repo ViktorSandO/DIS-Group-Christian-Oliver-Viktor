@@ -1,0 +1,25 @@
+1. GIT
+git clone https://github.com/ViktorSandO/DIS-Group-Christian-Oliver-Viktor.git
+cd DIS-Group-Christian-Oliver-Viktor
+
+
+2. PAKKER
+pip install -r requirements.txt
+
+
+3. DATABASE
+chmod +x SETUP_DATABASE_FOR_NOOBS.sh
+./SETUP_DATABASE_FOR_NOOBS.sh
+
+
+4. KØR APP
+python app.py
+
+
+5. Indtast password for din DATABASE
+
+
+6. ÅBN APP
+http://127.0.0.1:5000
+
+

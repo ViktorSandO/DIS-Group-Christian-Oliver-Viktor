@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Fantasy Team</title>
+</head>
+<body>
+    <h1>My Fantasy Team</h1>
+
+    <a href="/players">Back to players</a>
+
+    <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Country</th>
+            <th>Price</th>
+            <th>Remove</th>
+        </tr>
+
+        {% for player in players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ player.country }}</td>
+            <td>{{ player.price }}</td>
+            <td>
+                <form action="/remove-player/{{ player.player_id }}" method="POST">
+                    <button type="submit">X</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<div style="display: flex; gap: 40px;">
+
+    <div style="width: 50%;">
+        <h2>Available Players</h2>
+
+        <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Country</th>
+            <th>Price</th>
+            <th>Select</th>
+        </tr>
+
+        {% for player in players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ player.country }}</td>
+            <td>{{ player.price }}</td>
+            <td>
+                <form action="/add-player/{{ player.player_id }}" method="POST">
+                    <button type="submit">Add</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+    <div style="width: 50%;">
+        <h2>Your Team</h2>
+
+        <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Country</th>
+            <th>Price</th>
+            <th>Remove</th>
+        </tr>
+
+        {% for player in team_players %}
+        <tr>
+            <td>{{ player.name }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ player.country }}</td>
+            <td>{{ player.price }}</td>
+            <td>
+                <form action="/remove-player/{{ player.player_id }}" method="POST">
+                    <button type="submit">X</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    </div>
+
+</div>
