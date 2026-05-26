@@ -137,8 +137,8 @@ INSERT INTO users (user_id, username, email) VALUES
 (2, 'testuser', 'test@example.com');
 
 INSERT INTO fantasy_teams (fantasy_team_id, user_id, team_name, budget) VALUES
-(1, 1, 'Westi FC', 100),
-(2, 2, 'Test FC', 100);
+(1, 1, 'Westi FC', 90),
+(2, 2, 'Test FC', 90);
 
 INSERT INTO fantasy_team_players (fantasy_team_id, player_id) VALUES (1, 1);
 INSERT INTO fantasy_team_players (fantasy_team_id, player_id) VALUES (1, 2);

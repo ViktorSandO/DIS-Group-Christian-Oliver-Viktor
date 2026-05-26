@@ -1,5 +1,13 @@
 <div style="display: flex; gap: 40px;">
 
+
+    <div class="budget-box">
+        <h2>Budget</h2>
+        <p>Total budget: {{ budget }}</p>
+        <p>Used budget: {{ used_budget }}</p>
+        <p>Remaining budget: {{ remaining_budget }}</p>
+    </div>
+
     <div style="width: 50%;">
         <h2>Available Players</h2>
 
@@ -55,5 +63,7 @@
         {% endfor %}
     </table>
     </div>
+
+
 
 </div>
