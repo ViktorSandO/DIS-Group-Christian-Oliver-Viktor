@@ -21,7 +21,6 @@ def get_db_connection():
     )
 
 
-
 # Home page
 @app.route("/")
 def index():
@@ -30,6 +29,14 @@ def index():
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
+
+    # Fantasy team
+    cur.execute("""
+        SELECT team_name
+        FROM fantasy_teams
+        WHERE fantasy_team_id = %s;
+        """, (fantasy_team_id,))
+    team_name = cur.fetchone()[0]
 
     # Budget calculation
     cur.execute("""
@@ -146,6 +153,29 @@ def index():
     """, (fantasy_team_id,))
     team_players = cur.fetchall()
 
+    team_slots = {
+        "GK": [],
+        "DEF": [],
+        "MID": [],
+        "FWD": []
+    }
+
+    for player in team_players:
+        position = player[3]
+        team_slots[position].append(player)
+
+    formation = {
+        "GK": 1,
+        "DEF": 4,
+        "MID": 4,
+        "FWD": 2
+    }
+
+    for position, number_of_slots in formation.items():
+        while len(team_slots[position]) < number_of_slots:
+            team_slots[position].append(None)
+
+
     cur.close()
     conn.close()
 
@@ -155,74 +185,10 @@ def index():
         team_players=team_players,
         budget = budget,
         used_budget = used_budget,
-        remaining_budget = remaining_budget
+        remaining_budget = remaining_budget,
+        team_slots = team_slots,
+        team_name = team_name
     )
-
-
-# Players page with player list and add buttons
-# @app.route("/players")
-# def players():
-#     conn = get_db_connection()
-#     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-#     cur.execute("""
-#         SELECT 
-#             p.player_id,
-#             p.name,
-#             p.position,
-#             nt.country,
-#             p.price
-#         FROM players p
-#         JOIN national_teams nt 
-#             ON p.national_team_id = nt.national_team_id
-#         ORDER BY nt.country, p.position, p.name;
-#     """)
-
-#     players = cur.fetchall()
-
-#     cur.close()
-#     conn.close()
-
-#     return render_template("players.html", players=players)
-
-
-
-# Fantasy team page showing selected players
-# @app.route("/team")
-# def team():
-#     fantasy_team_id = 1
-
-#     conn = get_db_connection()
-#     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-
-#     cur.execute("""
-#         SELECT
-#             p.player_id, 
-#             ft.team_name,
-#             p.name,
-#             p.position,
-#             nt.country,
-#             p.price
-#         FROM fantasy_teams ft
-#         JOIN fantasy_team_players ftp
-#             ON ft.fantasy_team_id = ftp.fantasy_team_id
-#         JOIN players p
-#             ON ftp.player_id = p.player_id
-#         JOIN national_teams nt
-#             ON p.national_team_id = nt.national_team_id
-#         WHERE ft.fantasy_team_id = %s
-#         ORDER BY p.position, p.name;
-#     """, (fantasy_team_id,))
-
-#     players = cur.fetchall()
-
-#     cur.close()
-#     conn.close()
-
-#     return render_template("team.html", players=players)
-
-
-
 
 
 # Add player to fantasy team
@@ -234,18 +200,19 @@ def add_player(player_id):
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT price
+        SELECT position, price
         FROM players
         WHERE player_id = %s;
     """, (player_id,))
     player = cur.fetchone()
+    player_position = player[0]
+    player_price = player[1]
+
 
     if player is None:
         cur.close()
         conn.close()
         return redirect("/")
-
-    player_price = player[0]
 
     cur.execute("""
         SELECT ft.budget - COALESCE(SUM(p.price), 0) AS remaining_budget
@@ -266,12 +233,15 @@ def add_player(player_id):
         """, (fantasy_team_id, player_id))
         conn.commit()
 
+
+
     cur.close()
     conn.close()
 
     return redirect("/")
 
 
+# Remove player from fantasy team
 @app.route("/remove-player/<int:player_id>", methods=["POST"])
 def remove_player(player_id):
     fantasy_team_id = 1

@@ -1,13 +1,6 @@
 <div style="display: flex; gap: 40px;">
 
 
-    <div class="budget-box">
-        <h2>Budget</h2>
-        <p>Total budget: {{ budget }}</p>
-        <p>Used budget: {{ used_budget }}</p>
-        <p>Remaining budget: {{ remaining_budget }}</p>
-    </div>
-
     <div style="width: 50%;">
         <h2>Available Players</h2>
 
@@ -16,7 +9,7 @@
             <th>Name</th>
             <th>Position</th>
             <th>Country</th>
-            <th>Price</th>
+            <th>Price$</th>
             <th>Select</th>
         </tr>
 
@@ -25,7 +18,7 @@
             <td>{{ player.name }}</td>
             <td>{{ player.position }}</td>
             <td>{{ player.country }}</td>
-            <td>{{ player.price }}</td>
+            <td>{{ player.price }}$</td>
             <td>
                 <form action="/add-player/{{ player.player_id }}" method="POST">
                     <button type="submit">Add</button>
@@ -36,32 +29,45 @@
     </table>
     </div>
 
-    <div style="width: 50%;">
-        <h2>Your Team</h2>
 
-        <table border="1">
-        <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Country</th>
-            <th>Price</th>
-            <th>Remove</th>
-        </tr>
+    <div class="budget-box">
+        <h2>Budget</h2>
+        <p>Total budget: {{ budget }}$</p>
+        <p>Used budget: {{ used_budget }}$</p>
+        <p>Remaining budget: {{ remaining_budget }}$</p>
+    </div>
 
-        {% for player in team_players %}
-        <tr>
-            <td>{{ player.name }}</td>
-            <td>{{ player.position }}</td>
-            <td>{{ player.country }}</td>
-            <td>{{ player.price }}</td>
-            <td>
-                <form action="/remove-player/{{ player.player_id }}" method="POST">
-                    <button type="submit">X</button>
-                </form>
-            </td>
-        </tr>
+
+
+    <div class="team-list">
+        <h2>Your Team: <strong>{{ team_name }}</strong></h2>
+
+        {% for position, players in team_slots.items() %}
+            <h3>{{ position }}</h3>
+
+            {% for player in players %}
+                <div class="team-slot">
+                    {% if player %}
+                        <div>
+                            <strong>{{ player[2] }}</strong><br>
+                            <span>{{ player[4] }}</span>
+                        </div>
+
+                        <div>
+                            {{ player[5] }}$
+                        </div>
+
+                        <form action="/remove-player/{{ player[0] }}" method="POST">
+                            <button type="submit">Remove</button>
+                        </form>
+                    {% else %}
+                        <div class="empty-slot">
+                            Empty {{ position }} slot
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
         {% endfor %}
-    </table>
     </div>
 
 
