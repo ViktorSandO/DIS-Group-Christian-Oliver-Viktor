@@ -18,8 +18,8 @@ EXCLUDE_THIRD_PLACE_PLAYOFF = True
 
 
 # Constraints to filter out total amount of players
-MIN_TOTAL_MINUTES = 100
-MAX_PLAYERS_PER_TEAM = 12
+MIN_TOTAL_MINUTES = 0
+MAX_PLAYERS_PER_TEAM = 11
 
 
 def download_file(url, path):
@@ -510,14 +510,6 @@ def write_seed_sql(teams, players, matches_out, player_stats):
 
     sql.append("")
 
-    # Example users and fantasy teams
-    sql.append("INSERT INTO users (user_id, username, email) VALUES")
-    sql.append("(1, 'westi', 'westi@example.com'),")
-    sql.append("(2, 'testuser', 'test@example.com');\n")
-
-    sql.append("INSERT INTO fantasy_teams (fantasy_team_id, user_id, team_name, budget) VALUES")
-    sql.append("(1, 1, 'Westi FC', 100),")
-    sql.append("(2, 2, 'Test FC', 100);\n")
 
     # Add some example fantasy team players
     first_players = list(player_id.values())[:10]

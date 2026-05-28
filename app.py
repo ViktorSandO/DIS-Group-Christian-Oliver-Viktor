@@ -3,6 +3,8 @@ import psycopg2
 import psycopg2.extras
 from flask import Flask, render_template, request, redirect, url_for, session
 import getpass
+import re
+import unicodedata
 
 app = Flask(__name__)
 
@@ -10,6 +12,38 @@ app.secret_key = "secret"
 
 # Prompt the user for the PostgreSQL password when the app starts
 DB_PASSWORD = getpass.getpass("Enter your PostgreSQL password: ")
+
+# Flags
+flags = {
+    "Argentina": "ar",
+    "France": "fr",
+    "Brazil": "br",
+    "Denmark": "dk",
+    "England": "gb-eng",
+    "Portugal": "pt",
+    "Spain": "es",
+    "Netherlands": "nl",
+    "Croatia": "hr",
+    "Morocco": "ma",
+    "Japan": "jp",
+    "South Korea": "kr",
+    "Senegal": "sn",
+    "Switzerland": "ch",
+    "Poland": "pl",
+    "United States": "us"
+}
+
+# Images
+def image_filename(name):
+    name = str(name).lower()
+    name = unicodedata.normalize("NFKD", name)
+    name = "".join(c for c in name if not unicodedata.combining(c))
+    name = re.sub(r"[^a-z0-9 ]", " ", name)
+    name = " ".join(name.split())
+    return name.replace(" ", "_") + ".png"
+
+app.jinja_env.filters["image_filename"] = image_filename
+
 
 # Database connection function
 def get_db_connection():
@@ -215,7 +249,7 @@ def create_team(fantasy_team_id):
             WHERE fantasy_team_id = %s)
         AND p.price <= %s 
         AND NOT (p.position = ANY(%s)) 
-        ORDER BY nt.country, p.position, p.name;
+        ORDER BY nt.country, p.price DESC, p.position DESC, p.name;
     """, (fantasy_team_id, remaining_budget, full_position))
     players = cur.fetchall()
 
@@ -263,19 +297,33 @@ def create_team(fantasy_team_id):
             team_slots[position].append(None)
 
 
+    # Group players by country for display
+    players_by_country = {}
+
+    for player in players:
+        country = player[3]
+
+        if country not in players_by_country:
+            players_by_country[country] = []
+
+        players_by_country[country].append(player)
+
+
     cur.close()
     conn.close()
 
     return render_template(
         "create-team.html",
         players=players,
+        players_by_country = players_by_country,
         team_players=team_players,
         budget = budget,
         used_budget = used_budget,
         remaining_budget = remaining_budget,
         team_slots = team_slots,
         team_name = team_name,
-        fantasy_team_id = fantasy_team_id
+        fantasy_team_id = fantasy_team_id,
+        flags = flags
     )
 
 
@@ -350,7 +398,7 @@ def remove_player(player_id, fantasy_team_id):
 
 
 # Change name of fantasy team
-@app.route("/team/<int:fantasy_team_id>/change-team-name", methods=["POST"])
+@app.route("/change-team-name/<int:fantasy_team_id>", methods=["POST"])
 def change_team_name(fantasy_team_id):
     new_team_name = request.form["team_name"]
 
@@ -371,7 +419,7 @@ def change_team_name(fantasy_team_id):
 
 
 # Delete fantasy team
-@app.route("/team/<int:fantasy_team_id>/delete-team", methods=["POST"])
+@app.route("/delete-team/<int:fantasy_team_id>", methods=["POST"])
 def delete_team(fantasy_team_id):
     conn = get_db_connection()
     cur = conn.cursor()
@@ -390,7 +438,27 @@ def delete_team(fantasy_team_id):
     cur.close()
     conn.close()
 
-    return redirect(url_for("home"))
+    return redirect()
+
+
+# Remove all players
+@app.route("/remove-all/<int:fantasy_team_id>", methods=["POST"])
+def remove_all(fantasy_team_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM fantasy_team_players
+        WHERE fantasy_team_id = %s;
+    """, (fantasy_team_id,))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(f"/create-team/{fantasy_team_id}")
+
+
 
 # Run the app
 if __name__ == "__main__":

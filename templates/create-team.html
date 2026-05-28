@@ -11,29 +11,47 @@
         <div class="players-section">
             <h2>Available Players</h2>
 
-            <table>
-            <tr>
-                <th>Name</th>
-                <th>Position</th>
-                <th>Country</th>
-                <th>Price$</th>
-                <th>Select</th>
-            </tr>
+            {% for country, country_players in players_by_country.items() %}
+                <details class="country-table">
+                    <summary>
+                        <img 
+                        src="https://flagcdn.com/w40/{{ flags.get(country, 'un') }}.png"
+                        width="24"
+                        style="vertical-align: middle; margin-right: 6px;"
+                        >
+                        {{ country }}
+                </summary>
 
-            {% for player in players %}
-            <tr>
-                <td>{{ player.name }}</td>
-                <td>{{ player.position }}</td>
-                <td>{{ player.country }}</td>
-                <td>{{ player.price }}$</td>
-                <td>
-                    <form action="/add-player/{{ player.player_id }}/{{ fantasy_team_id }}" method="POST">
-                        <button type="submit">Add</button>
-                    </form>
-                </td>
-            </tr>
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <th>Pos</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+
+                        {% for player in country_players %}
+                        <tr>
+                            <td>
+                                <img 
+                                    src="{{ url_for('static', filename='player_images/' + (player.name|image_filename)) }}"
+                                    class="player-img"
+                                    onerror="this.style.display='none'"
+                                >
+                                    {{ player.name }}
+                            </td>
+                            <td>{{ player.position }}</td>
+                            <td>{{ player.price }}$</td>
+                            <td>
+                                <form action="/add-player/{{ player.player_id }}/{{ fantasy_team_id }}" method="POST">
+                                    <button type="submit">Add</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </details>
             {% endfor %}
-        </table>
         </div>
 
 
@@ -44,13 +62,17 @@
             <p>Remaining budget: {{ remaining_budget }}$</p>
         </div>
 
+        
         <div class="team-list">
             <h2>Your Team: <strong>{{ team_name }}</strong></h2>
+
+
+            <div class="team-action-row">
 
             <button type="button" onclick="showNameForm()">Change name</button>
 
             <form id="change-name-form" 
-                action="/team/{{ fantasy_team_id }}/change-team-name" 
+                action="/change-team-name/{{ fantasy_team_id }}" 
                 method="POST" 
                 style="display: none; margin-top: 10px;">
 
@@ -68,12 +90,13 @@
                 document.getElementById("change-name-form").style.display = "none";
             }
             </script>
-            <a href="/login"><button>Log out</button></a>
 
-            <form action="/team/{{ fantasy_team_id }}/delete-team" method="POST"
-                onsubmit="return confirm('Are you sure you want to delete this team?');">
-                <button type="submit">Delete team</button>
+            <form action="/remove-all/{{ fantasy_team_id }}" method="POST">
+                <button type="submit" class="remove-button">Remove all</button>
             </form>
+
+            </div>
+    
 
             {% for position, players in team_slots.items() %}
                 <h3>{{ position }}</h3>
@@ -81,8 +104,20 @@
                     <div class="team-slot">
                         {% if player %}
                             <div>
+                                <img
+                                    src="{{ url_for('static', filename='player_images/' + (player.name|image_filename)) }}"
+                                    class="team-player-img"
+                                    onerror="this.style.display='none'"
+                                    >
                                 <strong>{{ player[2] }}</strong><br>
-                                <span>{{ player[4] }}</span>
+                                <span>
+                                    <img 
+                                        src="https://flagcdn.com/w40/{{ flags.get(player[4], 'un') }}.png"
+                                        width="24"
+                                        style="vertical-align: middle; margin-right: 6px;"
+                                    >
+                                        {{ player[4] }}
+                                </span>
                             </div>
 
                             <div>
@@ -90,7 +125,7 @@
                             </div>
 
                             <form action="/remove-player/{{ player[0] }}/{{ fantasy_team_id }}" method="POST">
-                                <button type="submit">Remove</button>
+                                <button type="submit" class="remove-button">Remove</button>
                             </form>
                         {% else %}
                             <div class="empty-slot">
@@ -100,6 +135,14 @@
                     </div>
                 {% endfor %}
             {% endfor %}
+            <div class="team-action-row">
+                <a href="/login"><button>Log out</button></a>
+
+                <form action="/delete-team/{{ fantasy_team_id }}" method="POST"
+                    onsubmit="return confirm('Are you sure you want to delete this team?');">
+                    <button type="submit" class="remove-button">Delete team</button>
+                </form>
+            </div>
         </div>
 
 

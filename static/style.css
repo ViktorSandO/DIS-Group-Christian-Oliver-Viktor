@@ -28,6 +28,18 @@ button {
     cursor: pointer;
 }
 
+button:hover {
+    background-color: #457b9d;
+}
+
+.remove-button {
+    background-color: #72020b;
+}
+
+.remove-button:hover {
+    background-color: #c00108e1;
+}
+
 .error {
     color: red;
 }
@@ -40,7 +52,11 @@ button {
 }
 
 .players-section {
-    width: 50%;
+    width: 55%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    align-items: start;
 }
 
 table {
@@ -68,12 +84,22 @@ th {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+.budget-box h3 {
+    margin-top: 0;
+    color: #1d3557;
+}
+
 .team-list {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     min-width: 280px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.team-list h3 {
+    margin-top: 0;
+    color: #1d3557;
 }
 
 .team-slot {
@@ -87,7 +113,85 @@ th {
     border-radius: 6px;
 }
 
+.team-slot.empty {
+    background-color: #f0f0f0;
+    border-style: dashed;
+}
+
 .empty-slot {
     color: #777;
     font-style: italic;
+}
+
+
+.country-table {
+    background-color: white;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.country-table h3 {
+    margin-top: 0;
+    color: #1d3557;
+}
+
+
+.country-table summary {
+    font-weight: bold;
+    cursor: pointer;
+    color: #1d3557;
+    font-size: 18px;
+}
+
+.country-table summary:hover {
+    color: #457b9d;
+}
+
+.country-table table {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+
+.country-table button {
+    padding: 5px 10px;
+}
+
+.country-table button:hover {
+    background-color: #457b9d;
+}
+
+.player-img {
+    width: 54px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 14px;
+}
+
+.player-img:hover {
+    transform: scale(1.4);
+    transition: transform 0.2s ease-in-out;
+}
+
+.team-player-img {
+    width: 66px;
+    height: 66px;
+    object-fit: cover;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 20px;
+}
+
+.team-player-img:hover {
+    transform: scale(1.4);
+    transition: transform 0.2s ease-in-out;
+}
+
+.team-action-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
 }
