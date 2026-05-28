@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>World Cup Fantasy - Create Team</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body></body>
+<div class="team-page">
+
+
+        <div class="players-section">
+            <h2>Available Players</h2>
+
+            <table>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Country</th>
+                <th>Price$</th>
+                <th>Select</th>
+            </tr>
+
+            {% for player in players %}
+            <tr>
+                <td>{{ player.name }}</td>
+                <td>{{ player.position }}</td>
+                <td>{{ player.country }}</td>
+                <td>{{ player.price }}$</td>
+                <td>
+                    <form action="/add-player/{{ player.player_id }}/{{ fantasy_team_id }}" method="POST">
+                        <button type="submit">Add</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        </div>
+
+
+        <div class="budget-box">
+            <h2>Budget</h2>
+            <p>Total budget: {{ budget }}$</p>
+            <p>Used budget: {{ used_budget }}$</p>
+            <p>Remaining budget: {{ remaining_budget }}$</p>
+        </div>
+
+        <div class="team-list">
+            <h2>Your Team: <strong>{{ team_name }}</strong></h2>
+
+            <button type="button" onclick="showNameForm()">Change name</button>
+
+            <form id="change-name-form" 
+                action="/team/{{ fantasy_team_id }}/change-team-name" 
+                method="POST" 
+                style="display: none; margin-top: 10px;">
+
+                <input type="text" name="team_name" value="{{ team_name }}" required>
+                <button type="submit">Save</button>
+                <button type="button" onclick="hideNameForm()">Cancel</button>
+            </form>
+
+            <script>
+            function showNameForm() {
+                document.getElementById("change-name-form").style.display = "block";
+            }
+
+            function hideNameForm() {
+                document.getElementById("change-name-form").style.display = "none";
+            }
+            </script>
+            <a href="/login">Log out</a>
+            {% for position, players in team_slots.items() %}
+                <h3>{{ position }}</h3>
+
+                {% for player in players %}
+                    <div class="team-slot">
+                        {% if player %}
+                            <div>
+                                <strong>{{ player[2] }}</strong><br>
+                                <span>{{ player[4] }}</span>
+                            </div>
+
+                            <div>
+                                {{ player[5] }}$
+                            </div>
+
+                            <form action="/remove-player/{{ player[0] }}/{{ fantasy_team_id }}" method="POST">
+                                <button type="submit">Remove</button>
+                            </form>
+                        {% else %}
+                            <div class="empty-slot">
+                                Empty {{ position }} slot
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+
+
+    </div>
+</body>
+</html>

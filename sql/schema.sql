@@ -9,7 +9,7 @@
     CREATE TABLE users (
         user_id SERIAL PRIMARY KEY,
         username TEXT NOT NULL UNIQUE,
-        email TEXT
+        password TEXT NOT NULL
     );
 
     CREATE TABLE national_teams (
@@ -30,7 +30,7 @@
         fantasy_team_id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(user_id),
         team_name TEXT NOT NULL,
-        budget INTEGER NOT NULL DEFAULT 100
+        budget INTEGER NOT NULL DEFAULT 90
     );
 
     CREATE TABLE fantasy_team_players (

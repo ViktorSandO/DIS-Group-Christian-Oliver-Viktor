@@ -132,14 +132,6 @@ INSERT INTO matches (match_id, home_team_id, away_team_id, match_date, home_scor
 INSERT INTO matches (match_id, home_team_id, away_team_id, match_date, home_score, away_score) VALUES (14, 6, 10, '2022-12-04', 3, 1);
 INSERT INTO matches (match_id, home_team_id, away_team_id, match_date, home_score, away_score) VALUES (15, 9, 16, '2022-12-03', 3, 1);
 
-INSERT INTO users (user_id, username, email) VALUES
-(1, 'westi', 'westi@example.com'),
-(2, 'testuser', 'test@example.com');
-
-INSERT INTO fantasy_teams (fantasy_team_id, user_id, team_name, budget) VALUES
-(1, 1, 'Westi FC', 90),
-(2, 2, 'Test FC', 90);
-
 INSERT INTO fantasy_team_players (fantasy_team_id, player_id) VALUES (1, 1);
 INSERT INTO fantasy_team_players (fantasy_team_id, player_id) VALUES (1, 2);
 INSERT INTO fantasy_team_players (fantasy_team_id, player_id) VALUES (1, 3);

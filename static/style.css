@@ -1,0 +1,93 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+}
+
+.page-container {
+    width: 400px;
+    margin: 100px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #1d3557;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+}
+
+.team-page {
+    display: flex;
+    gap: 40px;
+    padding: 30px;
+    align-items: flex-start;
+}
+
+.players-section {
+    width: 50%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+th {
+    background-color: #1d3557;
+    color: white;
+}
+
+.budget-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.team-list {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 280px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.team-slot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}
+
+.empty-slot {
+    color: #777;
+    font-style: italic;
+}

@@ -1,11 +1,12 @@
 from flask import Flask, render_template
 import psycopg2
 import psycopg2.extras
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, request, redirect, url_for, session
 import getpass
 
 app = Flask(__name__)
 
+app.secret_key = "secret"
 
 # Prompt the user for the PostgreSQL password when the app starts
 DB_PASSWORD = getpass.getpass("Enter your PostgreSQL password: ")
@@ -21,10 +22,96 @@ def get_db_connection():
     )
 
 
-# Home page
-@app.route("/")
-def index():
-    fantasy_team_id = 1
+# Create user and team
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        team_name = request.form["team_name"]
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        try:
+            cur.execute("""
+                INSERT INTO users (username, password)
+                VALUES (%s, %s)
+                RETURNING user_id;
+            """, (username, password))
+
+            user_id = cur.fetchone()[0]
+
+            cur.execute("""
+                INSERT INTO fantasy_teams (user_id, team_name)
+                VALUES (%s, %s)
+                RETURNING fantasy_team_id;
+            """, (user_id, team_name))
+
+            fantasy_team_id = cur.fetchone()[0]
+
+            conn.commit()
+
+        except:
+            conn.rollback()
+            cur.close()
+            conn.close()
+            return render_template("home.html", error="Username already exists.")
+
+        cur.close()
+        conn.close()
+
+        session["user_id"] = user_id
+        return redirect(url_for("create_team", fantasy_team_id=fantasy_team_id))
+
+    return render_template("home.html")
+
+
+# Login
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT user_id
+            FROM users
+            WHERE username = %s AND password = %s;
+        """, (username, password))
+
+        user = cur.fetchone()
+
+        if user is None:
+            cur.close()
+            conn.close()
+            return render_template("login.html", error="Wrong username or password.")
+
+        user_id = user[0]
+        session["user_id"] = user_id
+
+        cur.execute("""
+            SELECT fantasy_team_id
+            FROM fantasy_teams
+            WHERE user_id = %s;
+        """, (user_id,))
+
+        team = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        return redirect(url_for("create_team", fantasy_team_id=team[0]))
+
+    return render_template("login.html")
+
+
+# Route for creating and managing the fantasy team
+@app.route("/create-team/<int:fantasy_team_id>")
+def create_team(fantasy_team_id):
 
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -154,10 +241,10 @@ def index():
     team_players = cur.fetchall()
 
     team_slots = {
+        "FWD": [],
         "GK": [],
-        "DEF": [],
         "MID": [],
-        "FWD": []
+        "DEF": []
     }
 
     for player in team_players:
@@ -180,21 +267,21 @@ def index():
     conn.close()
 
     return render_template(
-        "index.html",
+        "create-team.html",
         players=players,
         team_players=team_players,
         budget = budget,
         used_budget = used_budget,
         remaining_budget = remaining_budget,
         team_slots = team_slots,
-        team_name = team_name
+        team_name = team_name,
+        fantasy_team_id = fantasy_team_id
     )
 
 
 # Add player to fantasy team
-@app.route("/add-player/<int:player_id>", methods=["POST"])
-def add_player(player_id):
-    fantasy_team_id = 1
+@app.route("/add-player/<int:player_id>/<int:fantasy_team_id>", methods=["POST"])
+def add_player(player_id, fantasy_team_id):
 
     conn = get_db_connection()
     cur = conn.cursor()
@@ -212,7 +299,7 @@ def add_player(player_id):
     if player is None:
         cur.close()
         conn.close()
-        return redirect("/")
+        return redirect("/create-team")
 
     cur.execute("""
         SELECT ft.budget - COALESCE(SUM(p.price), 0) AS remaining_budget
@@ -238,13 +325,12 @@ def add_player(player_id):
     cur.close()
     conn.close()
 
-    return redirect("/")
+    return redirect(f"/create-team/{fantasy_team_id}")
 
 
 # Remove player from fantasy team
-@app.route("/remove-player/<int:player_id>", methods=["POST"])
-def remove_player(player_id):
-    fantasy_team_id = 1
+@app.route("/remove-player/<int:player_id>/<int:fantasy_team_id>", methods=["POST"])
+def remove_player(player_id, fantasy_team_id):
         
     conn = get_db_connection()
     cur = conn.cursor()
@@ -260,10 +346,28 @@ def remove_player(player_id):
     cur.close()
     conn.close()
 
-    return redirect("/")
+    return redirect(f"/create-team/{fantasy_team_id}")
 
 
+# Change name of fantasy team
+@app.route("/team/<int:fantasy_team_id>/change-team-name", methods=["POST"])
+def change_team_name(fantasy_team_id):
+    new_team_name = request.form["team_name"]
 
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        UPDATE fantasy_teams
+        SET team_name = %s
+        WHERE fantasy_team_id = %s;
+    """, (new_team_name, fantasy_team_id))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(url_for("create_team", fantasy_team_id=fantasy_team_id))
 
 # Run the app
 if __name__ == "__main__":

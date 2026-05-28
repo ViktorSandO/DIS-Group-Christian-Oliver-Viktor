@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Team</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="page-container">
+
+    <h1>Create your fantasy team </h1>
+
+<form method="POST">
+    <p>Username</p>
+    <input type="text" name="username" required>
+
+    <p>Password</p>
+    <input type="password" name="password" required>
+
+    <p>Team name</p>
+    <input type="text" name="team_name" required>
+
+    <br><br>
+
+    <button type="submit">Create team</button>
+</form>
+
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+
+<p>
+    Already have a team?
+    <a href="/login">Login here</a>
+</p>
+
+</div>
+
+</body>
+</html>
