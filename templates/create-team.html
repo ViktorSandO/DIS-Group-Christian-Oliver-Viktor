@@ -68,10 +68,15 @@
                 document.getElementById("change-name-form").style.display = "none";
             }
             </script>
-            <a href="/login">Log out</a>
+            <a href="/login"><button>Log out</button></a>
+
+            <form action="/team/{{ fantasy_team_id }}/delete-team" method="POST"
+                onsubmit="return confirm('Are you sure you want to delete this team?');">
+                <button type="submit">Delete team</button>
+            </form>
+
             {% for position, players in team_slots.items() %}
                 <h3>{{ position }}</h3>
-
                 {% for player in players %}
                     <div class="team-slot">
                         {% if player %}

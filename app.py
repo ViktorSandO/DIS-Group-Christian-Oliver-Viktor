@@ -369,6 +369,29 @@ def change_team_name(fantasy_team_id):
 
     return redirect(url_for("create_team", fantasy_team_id=fantasy_team_id))
 
+
+# Delete fantasy team
+@app.route("/team/<int:fantasy_team_id>/delete-team", methods=["POST"])
+def delete_team(fantasy_team_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        DELETE FROM fantasy_teams
+        WHERE fantasy_team_id = %s;
+    """, (fantasy_team_id,))
+
+    cur.execute("""
+        DELETE FROM users
+        WHERE user_id = %s;
+    """, (fantasy_team_id,))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return redirect(url_for("home"))
+
 # Run the app
 if __name__ == "__main__":
     app.run(debug=True)
