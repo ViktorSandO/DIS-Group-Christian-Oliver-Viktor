@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team Points & Stats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='team.css') }}">
+</head>
+
+<body>
+
+<div class="stats-page">
+
+    <!-- TOP BAR -->
+    <div class="stats-topbar">
+
+        <a href="/create-team/{{ fantasy_team_id }}" class="back-link">
+            ← Back to team
+        </a>
+
+        <div class="day-controls">
+            <form action="/previous-day/{{ fantasy_team_id }}" method="POST">
+                <button type="submit" class="nav-button">Previous Day</button>
+            </form>
+
+            <div class="current-date-box">
+                <span>Current Date</span>
+                <strong>{{ current_date if current_date is defined else "-" }}</strong>
+            </div>
+
+            <form action="/next-day/{{ fantasy_team_id }}" method="POST">
+                <button type="submit" class="nav-button">Next Day</button>
+            </form>
+        </div>
+
+    </div>
+
+
+    <!-- HERO -->
+    <div class="stats-hero">
+
+        <div>
+            <p class="eyebrow">Fantasy World Cup</p>
+            <h1>{{ team_name if team_name is defined else "Your Team" }}</h1>
+            <p class="hero-subtitle">
+                Points, games and player stats for your selected fantasy team.
+            </p>
+        </div>
+
+        <div class="hero-score">
+            <span>Total Points</span>
+            <strong>
+                {{ total_points if total_points is defined and total_points is not none else "-" }}
+            </strong>
+        </div>
+
+    </div>
+
+
+    <!-- UPCOMING GAMES FULL WIDTH -->
+    <div class="upcoming-games-panel">
+
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Fixtures</p>
+                <h2>Upcoming Games</h2>
+            </div>
+
+            <p>Next matches involving teams from your fantasy squad.</p>
+        </div>
+
+        <div class="upcoming-games-strip">
+
+            {% if upcoming_matches is defined and upcoming_matches %}
+                {% for match in upcoming_matches[:8] %}
+                    <div class="upcoming-game-card">
+                        <div class="upcoming-date">
+                            {{ match.match_date }}
+                        </div>
+
+                        <div class="upcoming-teams">
+                            
+                            <img 
+                                src="https://flagcdn.com/w40/{{ flags.get(match.away_team, 'un') }}.png"
+                                width="22"
+                                style="vertical-align: middle; margin-right: 6px;"
+                            >{{ match.home_team }}
+                            vs <br>
+                            <img 
+                                src="https://flagcdn.com/w40/{{ flags.get(match.home_team, 'un') }}.png"
+                                width="22"
+                                style="vertical-align: middle; margin-right: 6px;"
+                            >{{ match.away_team }}
+                        </div>
+
+                        <div class="upcoming-status">
+                            Upcoming
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-mini-card">
+                    No upcoming games available yet.
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- LINEUP + SIDE STATS -->
+    <div class="lineup-dashboard">
+
+        <!-- LEFT: FOOTBALL PITCH -->
+        <div class="pitch-column">
+
+            <div class="section-title">
+                <div>
+                    <p class="eyebrow">Starting XI</p>
+                    <h2>Team Lineup</h2>
+                </div>
+
+                <p>Players shown by position with current fantasy points.</p>
+            </div>
+
+            <div class="football-pitch">
+
+                <!-- FORWARDS -->
+                <div class="pitch-line forwards">
+                    {% if team_slots is defined %}
+                        {% for player in team_slots["FWD"] %}
+                            <div class="lineup-card">
+                                {% if player %}
+                                    <div class="player-points">
+                                        {{ player.points if player.points is defined else 0 }} pts
+                                    </div>
+
+                                    <img
+                                        src="{{ url_for('static', filename='player_images/' + player.name|image_filename) }}"
+                                        alt="{{ player.name }}"
+                                        class="lineup-player-img"
+                                    >
+
+                                    <div class="lineup-player-name">{{ player.name }}</div>
+                                    <div class="lineup-player-meta">
+                                        <img 
+                                        src="https://flagcdn.com/w40/{{ flags.get(player.country, 'un') }}.png"
+                                        width="16"
+                                        style="vertical-align: middle; margin-right: 6px;"
+                                    >{{ player.country }} · {{ player.position }}</div>
+
+                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                        Details
+                                    </a>
+
+                                    <div class="next-opponent">
+                                        Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-slot-text">Empty FWD</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+
+                <!-- MIDFIELDERS -->
+                <div class="pitch-line midfielders">
+                    {% if team_slots is defined %}
+                        {% for player in team_slots["MID"] %}
+                            <div class="lineup-card">
+                                {% if player %}
+                                    <div class="player-points">
+                                        {{ player.points if player.points is defined else 0 }} pts
+                                    </div>
+
+                                    <img
+                                        src="{{ url_for('static', filename='player_images/' + player.name|image_filename) }}"
+                                        alt="{{ player.name }}"
+                                        class="lineup-player-img"
+                                    >
+
+                                    <div class="lineup-player-name">{{ player.name }}</div>
+                                    <div class="lineup-player-meta">
+                                        <img 
+                                        src="https://flagcdn.com/w40/{{ flags.get(player.country, 'un') }}.png"
+                                        width="16"
+                                        style="vertical-align: middle; margin-right: 6px;"
+                                    >{{ player.country }} · {{ player.position }}</div>
+
+                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                        Details
+                                    </a>
+
+                                    <div class="next-opponent">
+                                        Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-slot-text">Empty MID</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+
+                <!-- DEFENDERS -->
+                <div class="pitch-line defenders">
+                    {% if team_slots is defined %}
+                        {% for player in team_slots["DEF"] %}
+                            <div class="lineup-card">
+                                {% if player %}
+                                    <div class="player-points">
+                                        {{ player.points if player.points is defined else 0 }} pts
+                                    </div>
+
+                                    <img
+                                        src="{{ url_for('static', filename='player_images/' + player.name|image_filename) }}"
+                                        alt="{{ player.name }}"
+                                        class="lineup-player-img"
+                                    >
+
+                                    <div class="lineup-player-name">{{ player.name }}</div>
+                                    <div class="lineup-player-meta">
+                                        <img 
+                                        src="https://flagcdn.com/w40/{{ flags.get(player.country, 'un') }}.png"
+                                        width="16"
+                                        style="vertical-align: middle; margin-right: 6px;"
+                                    >{{ player.country }} · {{ player.position }}</div>
+
+                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                        Details
+                                    </a>
+
+                                    <div class="next-opponent">
+                                        Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-slot-text">Empty DEF</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+
+                <!-- GOALKEEPER -->
+                <div class="pitch-line goalkeeper">
+                    {% if team_slots is defined %}
+                        {% for player in team_slots["GK"] %}
+                            <div class="lineup-card goalkeeper-card">
+                                {% if player %}
+                                    <div class="player-points">
+                                        {{ player.points if player.points is defined else 0 }} pts
+                                    </div>
+
+                                    <img
+                                        src="{{ url_for('static', filename='player_images/' + player.name|image_filename) }}"
+                                        alt="{{ player.name }}"
+                                        class="lineup-player-img"
+                                    >
+
+                                    <div class="lineup-player-name">{{ player.name }}</div>
+                                    <div class="lineup-player-meta">
+                                        <img 
+                                        src="https://flagcdn.com/w40/{{ flags.get(player.country, 'un') }}.png"
+                                        width="16"
+                                        style="vertical-align: middle; margin-right: 6px;"
+                                    >{{ player.country }} · {{ player.position }}</div>
+
+                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                        Details
+                                    </a>
+
+                                    <div class="next-opponent">
+                                        Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
+                                    </div>
+                                {% else %}
+                                    <div class="empty-slot-text">Empty GK</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT: SIDE STATS -->
+        <div class="side-stats-column">
+
+            <div class="side-card">
+                <h3>Team Overview</h3>
+
+                <div class="side-stat-row">
+                    <span>Total Points</span>
+                    <strong>{{ total_points if total_points is defined and total_points is not none else "-" }}</strong>
+                </div>
+
+                <div class="side-stat-row">
+                    <span>Games Played</span>
+                    <strong>{{ games_played if games_played is defined else "-" }}</strong>
+                </div>
+
+                <div class="side-stat-row">
+                    <span>Players Selected</span>
+                    <strong>{{ team_players|length if team_players is defined else "-" }}</strong>
+                </div>
+
+                <div class="side-stat-row">
+                    <span>Best Player</span>
+                    <strong>{{ best_player if best_player is defined and best_player else "-" }}</strong>
+                </div>
+            </div>
+
+
+            <div class="side-card">
+                <h3>Points by Position</h3>
+
+                <div class="position-stat">
+                    <span>FWD</span>
+                    <div class="position-bar">
+                        <div class="position-bar-fill" style="width: 20%;"></div>
+                    </div>
+                    <strong>{{ fwd_points if fwd_points is defined else "-" }}</strong>
+                </div>
+
+                <div class="position-stat">
+                    <span>MID</span>
+                    <div class="position-bar">
+                        <div class="position-bar-fill" style="width: 20%;"></div>
+                    </div>
+                    <strong>{{ mid_points if mid_points is defined else "-" }}</strong>
+                </div>
+
+                <div class="position-stat">
+                    <span>DEF</span>
+                    <div class="position-bar">
+                        <div class="position-bar-fill" style="width: 20%;"></div>
+                    </div>
+                    <strong>{{ def_points if def_points is defined else "-" }}</strong>
+                </div>
+
+                <div class="position-stat">
+                    <span>GK</span>
+                    <div class="position-bar">
+                        <div class="position-bar-fill" style="width: 20%;"></div>
+                    </div>
+                    <strong>{{ gk_points if gk_points is defined else "-" }}</strong>
+                </div>
+            </div>
+
+
+            <div class="side-card">
+                <h3>Top Players</h3>
+
+                {% if team_stats is defined and team_stats %}
+                    {% for player in team_stats[:5] %}
+                        <div class="top-player-row">
+                            <span>{{ player.name }}</span>
+                            <strong>{{ player.points }} pts</strong>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-mini-card">
+                        No player points yet.
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PLAYER POINTS TABLE -->
+    <div class="stats-panel">
+
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Overview</p>
+                <h2>Player Points</h2>
+            </div>
+
+            <p>Detailed overview of each selected player.</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Country</th>
+                        <th>Pos</th>
+                        <th>Points</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Clean Sheet</th>
+                        <th>Win</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if team_stats is defined and team_stats %}
+                        {% for player in team_stats %}
+                            <tr>
+                                <td>{{ player.name }}</td>
+                                <td>{{ player.country }}</td>
+                                <td>{{ player.position }}</td>
+                                <td><strong>{{ player.points }}</strong></td>
+                                <td>{{ player.goals }}</td>
+                                <td>{{ player.assists }}</td>
+                                <td>{{ player.clean_sheet }}</td>
+                                <td>{{ player.country_won }}</td>
+                                <td>
+                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="empty-row">
+                                No player stats available yet.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <!-- RAW STATS TABLE -->
+    <div class="stats-panel">
+
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Database Stats</p>
+                <h2>Raw Stats</h2>
+            </div>
+
+            <p>The underlying match stats used for the fantasy points.</p>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Match</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Saves</th>
+                        <th>Penalty Saves</th>
+                        <th>Tackles</th>
+                        <th>Key Passes</th>
+                        <th>Shots on Target</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if raw_stats is defined and raw_stats %}
+                        {% for stat in raw_stats %}
+                            <tr>
+                                <td>{{ stat.name }}</td>
+                                <td>{{ stat.match_name }}</td>
+                                <td>{{ stat.goals }}</td>
+                                <td>{{ stat.assists }}</td>
+                                <td>{{ stat.saves }}</td>
+                                <td>{{ stat.penalty_saves }}</td>
+                                <td>{{ stat.successful_tackles }}</td>
+                                <td>{{ stat.key_passes }}</td>
+                                <td>{{ stat.shots_on_target }}</td>
+                                <td><strong>{{ stat.points }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="10" class="empty-row">
+                                No raw stats available yet.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+    <!-- POINT SYSTEM -->
+    <div class="stats-panel">
+
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Rules</p>
+                <h2>Point System</h2>
+            </div>
+
+            <p>How the fantasy score is calculated.</p>
+        </div>
+
+        <div class="point-rules">
+
+            <div class="rule-card">
+                <h3>Goals</h3>
+                <p>FWD: -</p>
+                <p>MID/DEF/GK: -</p>
+            </div>
+
+            <div class="rule-card">
+                <h3>Assists</h3>
+                <p>MID: -</p>
+                <p>Others: -</p>
+            </div>
+
+            <div class="rule-card">
+                <h3>Defensive</h3>
+                <p>Clean sheet: -</p>
+                <p>Tackles: -</p>
+            </div>
+
+            <div class="rule-card">
+                <h3>Goalkeeper</h3>
+                <p>Saves: -</p>
+                <p>Penalty saves: -</p>
+            </div>
+
+            <div class="rule-card">
+                <h3>Team Result</h3>
+                <p>Country win: -</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -510,24 +510,6 @@ def write_seed_sql(teams, players, matches_out, player_stats):
 
     sql.append("")
 
-
-    # Add some example fantasy team players
-    first_players = list(player_id.values())[:10]
-
-    for p_id in first_players[:5]:
-        sql.append(
-            f"INSERT INTO fantasy_team_players (fantasy_team_id, player_id) "
-            f"VALUES (1, {p_id});"
-        )
-
-    for p_id in first_players[5:10]:
-        sql.append(
-            f"INSERT INTO fantasy_team_players (fantasy_team_id, player_id) "
-            f"VALUES (2, {p_id});"
-        )
-
-    sql.append("")
-
     # Player match stats
     stat_id = 1
 

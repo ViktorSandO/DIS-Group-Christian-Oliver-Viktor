@@ -1,0 +1,697 @@
+/* ---------- PAGE BASE ---------- */
+
+body {
+    margin: 0;
+    background: #f4f4f4;
+    color: #111;
+}
+
+.stats-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 28px;
+}
+
+
+/* ---------- TOP BAR ---------- */
+
+.stats-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.back-link {
+    text-decoration: none;
+    font-weight: 800;
+    color: #111;
+    background: white;
+    padding: 11px 18px;
+    border-radius: 999px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+.day-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.day-controls form {
+    margin: 0;
+}
+
+.nav-button {
+    border: none;
+    padding: 11px 18px;
+    border-radius: 999px;
+    font-weight: 800;
+    cursor: pointer;
+    background: #111;
+    color: white;
+}
+
+.current-date-box {
+    background: white;
+    padding: 9px 18px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+.current-date-box span {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    opacity: 0.65;
+    font-weight: 800;
+}
+
+.current-date-box strong {
+    display: block;
+    font-size: 14px;
+}
+
+
+/* ---------- HERO ---------- */
+
+.stats-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 26px;
+    padding: 36px;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.28), transparent 34%),
+        linear-gradient(135deg, #485b51, #006b34);
+    color: white;
+    margin-bottom: 26px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.22);
+}
+
+.eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    font-size: 12px;
+    font-weight: 900;
+    opacity: 0.72;
+}
+
+.stats-hero h1 {
+    font-size: 46px;
+    margin: 6px 0 10px 0;
+}
+
+.hero-subtitle {
+    margin: 0;
+    opacity: 0.88;
+    font-weight: 600;
+}
+
+.hero-score {
+    min-width: 170px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.38);
+    border-radius: 24px;
+    padding: 26px;
+    text-align: center;
+}
+
+.hero-score span {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    opacity: 0.82;
+}
+
+.hero-score strong {
+    display: block;
+    font-size: 48px;
+    line-height: 1;
+    margin-top: 8px;
+}
+
+
+/* ---------- SUMMARY CARDS ---------- */
+
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+}
+
+.summary-card h3 {
+    margin: 0 0 12px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.68;
+}
+
+.summary-card p {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 900;
+}
+
+
+/* ---------- SECTION TITLES ---------- */
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 22px;
+    margin-bottom: 16px;
+}
+
+.section-title h2 {
+    margin: 5px 0 0 0;
+    font-size: 30px;
+}
+
+.section-title p {
+    margin: 0;
+    opacity: 0.72;
+    font-weight: 600;
+}
+
+
+/* ---------- LINEUP DASHBOARD ---------- */
+
+.lineup-dashboard {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) 370px;
+    gap: 28px;
+    align-items: start;
+    margin-bottom: 32px;
+}
+
+.pitch-column {
+    min-width: 0;
+}
+
+.side-stats-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: sticky;
+    top: 20px;
+}
+
+
+/* ---------- FOOTBALL PITCH ---------- */
+
+.football-pitch {
+    position: relative;
+    min-height: 690px;
+    padding: 38px 24px;
+    border-radius: 30px;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,0.08) 50%, transparent 50%),
+        linear-gradient(#199045, #0b652f);
+    background-size: 105px 105px, 100% 100%;
+    border: 5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 22px 55px rgba(0,0,0,0.28);
+    overflow: hidden;
+}
+
+.football-pitch::before {
+    content: "";
+    position: absolute;
+    inset: 30px;
+    border: 2px solid rgba(255,255,255,0.75);
+    border-radius: 22px;
+    pointer-events: none;
+}
+
+.football-pitch::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 125px;
+    height: 125px;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(255,255,255,0.75);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.pitch-line {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 42px;
+}
+
+.goalkeeper {
+    margin-bottom: 0;
+}
+
+
+/* ---------- PLAYER CARDS ---------- */
+
+.lineup-card {
+    width: 118px;
+    min-height: 172px;
+    padding: 11px;
+    border-radius: 18px;
+    text-align: center;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.goalkeeper-card {
+    border: 3px solid rgba(255, 215, 60, 0.95);
+}
+
+.player-points {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-weight: 900;
+    background: #111;
+    color: white;
+    margin-bottom: 8px;
+    font-size: 11px;
+}
+
+.lineup-player-img {
+    width: 62px;
+    height: 62px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 8px;
+    background: #eee;
+}
+
+.lineup-player-name {
+    font-weight: 900;
+    font-size: 12px;
+    line-height: 1.15;
+}
+
+.lineup-player-meta {
+    font-size: 11px;
+    opacity: 0.72;
+    margin-top: 4px;
+}
+
+.small-details-link {
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #0b6a34;
+    text-decoration: none;
+}
+
+.next-opponent {
+    width: 100%;
+    margin-top: auto;
+    font-size: 11px;
+    padding: 5px;
+    border-radius: 9px;
+    background: #f1f1f1;
+}
+
+.empty-slot-text {
+    height: 100%;
+    min-height: 145px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #777;
+    font-weight: 800;
+    border: 2px dashed #bbb;
+    border-radius: 14px;
+    width: 100%;
+}
+
+
+/* ---------- SIDE STATS ---------- */
+
+.side-card {
+    background: white;
+    border-radius: 22px;
+    padding: 20px;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.10);
+}
+
+.side-card h3 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    opacity: 0.75;
+}
+
+.side-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.side-stat-row:last-child {
+    border-bottom: none;
+}
+
+.side-stat-row span {
+    opacity: 0.72;
+    font-weight: 800;
+}
+
+.side-stat-row strong {
+    font-size: 18px;
+}
+
+
+/* ---------- POSITION POINTS ---------- */
+
+.position-stat {
+    display: grid;
+    grid-template-columns: 42px 1fr 45px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.position-stat span {
+    font-weight: 900;
+    font-size: 13px;
+}
+
+.position-stat strong {
+    text-align: right;
+}
+
+.position-bar {
+    height: 9px;
+    border-radius: 999px;
+    background: #ececec;
+    overflow: hidden;
+}
+
+.position-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: #111;
+}
+
+
+/* ---------- MINI CARDS ---------- */
+
+.mini-game-card {
+    padding: 12px;
+    border-radius: 14px;
+    background: #f6f6f6;
+    margin-bottom: 10px;
+}
+
+.mini-game-card span {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    opacity: 0.62;
+    margin-bottom: 4px;
+}
+
+.mini-game-card strong {
+    display: block;
+    font-size: 13px;
+}
+
+.mini-game-card p {
+    margin: 5px 0 0 0;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.empty-mini-card {
+    padding: 14px;
+    border-radius: 14px;
+    background: #f6f6f6;
+    color: #777;
+    font-weight: 800;
+}
+
+.top-player-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.top-player-row:last-child {
+    border-bottom: none;
+}
+
+.top-player-row span {
+    font-weight: 800;
+}
+
+.top-player-row strong {
+    white-space: nowrap;
+}
+
+
+/* ---------- PANELS ---------- */
+
+.stats-panel {
+    background: white;
+    border-radius: 26px;
+    padding: 26px;
+    margin-bottom: 28px;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.10);
+}
+
+
+/* ---------- TABLES ---------- */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.stats-table th {
+    text-align: left;
+    padding: 13px;
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.68;
+    border-bottom: 2px solid #eee;
+}
+
+.stats-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-table tr:hover td {
+    background: #fafafa;
+}
+
+.stats-table a {
+    color: #0b6a34;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.empty-row {
+    text-align: center;
+    color: #777;
+    font-weight: 800;
+    padding: 28px;
+}
+
+
+/* ---------- POINT RULES ---------- */
+
+.point-rules {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+}
+
+.rule-card {
+    background: #f6f6f6;
+    border-radius: 18px;
+    padding: 18px;
+}
+
+.rule-card h3 {
+    margin: 0 0 10px 0;
+}
+
+.rule-card p {
+    margin: 6px 0;
+    opacity: 0.75;
+    font-weight: 600;
+}
+
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 1200px) {
+    .lineup-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .side-stats-column {
+        position: static;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .football-pitch {
+        min-height: 650px;
+    }
+}
+
+@media (max-width: 900px) {
+    .stats-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .point-rules {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 750px) {
+    .stats-page {
+        padding: 16px;
+    }
+
+    .stats-topbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .day-controls {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .stats-hero {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stats-hero h1 {
+        font-size: 34px;
+    }
+
+    .stats-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .side-stats-column {
+        grid-template-columns: 1fr;
+    }
+
+    .football-pitch {
+        min-height: auto;
+        padding: 32px 14px;
+    }
+
+    .pitch-line {
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+    }
+
+    .point-rules {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- UPCOMING GAMES FULL WIDTH ---------- */
+
+.upcoming-games-panel {
+    background: white;
+    border-radius: 26px;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.10);
+}
+
+.upcoming-games-strip {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 14px;
+}
+
+.upcoming-game-card {
+    background: #f6f6f6;
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px solid #e8e8e8;
+}
+
+.upcoming-date {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    opacity: 0.65;
+    margin-bottom: 8px;
+}
+
+.upcoming-teams {
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 10px;
+}
+
+.upcoming-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #111;
+    color: white;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+
+/* ---------- RESPONSIVE UPCOMING GAMES ---------- */
+
+@media (max-width: 1200px) {
+    .upcoming-games-strip {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 750px) {
+    .upcoming-games-strip {
+        grid-template-columns: 1fr;
+    }
+}

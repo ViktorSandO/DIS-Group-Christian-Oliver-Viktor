@@ -17,3 +17,5 @@ python-dotenv
 flask
 psycopg2
 getpass
+werkzeug
+kaggle

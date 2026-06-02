@@ -5,8 +5,11 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import getpass
 import re
 import unicodedata
-
+from datetime import date, timedelta
 app = Flask(__name__)
+
+
+current_date = date(2022, 12, 2) # Current date restriction to pull played matches
 
 app.secret_key = "secret"
 
@@ -55,8 +58,21 @@ def get_db_connection():
         port=5432
     )
 
+# Change current date
+@app.route("/next-day/<int:fantasy_team_id>", methods=["POST"])
+def next_day(fantasy_team_id):
+    global current_date
+    current_date = current_date + timedelta(days=1)
+    return redirect(url_for("team_stats", fantasy_team_id=fantasy_team_id))
 
-# Create user and team
+@app.route("/previous-day/<int:fantasy_team_id>", methods=["POST"])
+def previous_day(fantasy_team_id):
+    global current_date
+    current_date = current_date - timedelta(days=1)
+    return redirect(url_for("team_stats", fantasy_team_id=fantasy_team_id))
+
+
+# Create user
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
@@ -457,6 +473,242 @@ def remove_all(fantasy_team_id):
     conn.close()
 
     return redirect(f"/create-team/{fantasy_team_id}")
+
+
+@app.route("/team-stats/<int:fantasy_team_id>")
+def team_stats(fantasy_team_id):
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    # Recalculate current round from current_date
+    current_round = (
+        date(2022, 12, 6)
+        if current_date <= date(2022, 12, 6)
+        else date(2022, 12, 10)
+        if current_date <= date(2022, 12, 10)
+        else date(2022, 12, 18)
+    )
+
+    # Team name
+    cur.execute("""
+        SELECT team_name
+        FROM fantasy_teams
+        WHERE fantasy_team_id = %s;
+    """, (fantasy_team_id,))
+    team = cur.fetchone()
+
+    if team is None:
+        cur.close()
+        conn.close()
+        return redirect("/")
+
+    team_name = team["team_name"]
+
+    # Selected players on fantasy team
+    cur.execute("""
+        SELECT
+            p.player_id,
+            p.name,
+            p.position,
+            nt.country,
+            p.price
+        FROM fantasy_team_players ftp
+        JOIN players p
+            ON ftp.player_id = p.player_id
+        JOIN national_teams nt
+            ON p.national_team_id = nt.national_team_id
+        WHERE ftp.fantasy_team_id = %s
+        ORDER BY p.position, p.name;
+    """, (fantasy_team_id,))
+    team_players = cur.fetchall()
+
+    team_slots = {
+    "FWD": [],
+    "MID": [],
+    "DEF": [],
+    "GK": []
+    }
+
+    for player in team_players:
+        position = player["position"]
+        team_slots[position].append(player)
+
+    formation = {
+        "GK": 1,
+        "DEF": 4,
+        "MID": 4,
+        "FWD": 2
+    }
+
+    for position, number_of_slots in formation.items():
+        while len(team_slots[position]) < number_of_slots:
+            team_slots[position].append(None)
+
+    # Played matches
+    cur.execute("""
+        SELECT
+            m.match_id,
+            m.match_date,
+            nt1.country AS home_team,
+            nt2.country AS away_team
+        FROM matches m
+        JOIN national_teams nt1
+            ON m.home_team_id = nt1.national_team_id
+        JOIN national_teams nt2
+            ON m.away_team_id = nt2.national_team_id
+        WHERE m.match_date <= %s
+        ORDER BY m.match_date;
+    """, (current_date,))
+    matches = cur.fetchall()
+
+    # Upcoming matches
+    cur.execute("""
+        SELECT
+            m.match_id,
+            m.match_date,
+            nt1.country AS home_team,
+            nt2.country AS away_team
+        FROM matches m
+        JOIN national_teams nt1
+            ON m.home_team_id = nt1.national_team_id
+        JOIN national_teams nt2
+            ON m.away_team_id = nt2.national_team_id
+        WHERE m.match_date <= %s
+        ORDER BY m.match_date;
+    """, (current_round,))
+    upcoming_matches = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "team-stats.html",
+        fantasy_team_id=fantasy_team_id,
+        team_name=team_name,
+        current_date=current_date,
+        current_round=current_round,
+
+        # Basic data
+        team_players=team_players,
+        matches=matches,
+        team_slots=team_slots,
+        upcoming_matches=upcoming_matches,
+        flags=flags,
+
+        # Empty placeholders for now
+        total_points=None,
+        games_played=len(matches),
+        best_player=None,
+        team_stats=[],
+        raw_stats=[]
+    )
+
+
+
+# Player specific stats page
+@app.route("/match/<int:player_id>/<int:fantasy_team_id>", methods=["POST"])
+def points_per_match(player_id, fantasy_team_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            p.player_id,
+            p.name,
+            p.position,
+            nt.country,
+            m.match_id,
+            m.match_date,
+                
+            pms.goals,
+            pms.assists,
+            pms.country_won,
+            pms.saves,
+            pms.penalty_saves,
+            pms.clean_sheet,
+            pms.successful_tackles,
+            pms.key_passes,
+            pms.shots_on_target,
+            
+            (
+                CASE
+                    WHEN p.position = 'FWD' THEN pms.goals * 7
+                    ELSE pms.goals * 5
+                END
+                
+                + CASE
+                    WHEN p.position = 'MID' THEN pms.assists * 4
+                    ELSE pms.assists * 3
+                END
+                
+                + pms.saves * 1
+                
+                + pms.penalty_saves * 3
+                
+                + CASE
+                    WHEN p.position IN ('GK', 'DEF') AND pms.clean_sheet = TRUE THEN 4
+                    WHEN p.position = 'MID' AND pms.clean_sheet = TRUE THEN 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'DEF' THEN pms.successful_tackles * 2
+                    WHEN p.position = 'MID' THEN pms.successful_tackles * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'MID' THEN pms.key_passes * 2
+                    WHEN p.position = 'DEF' THEN pms.key_passes * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'FWD' THEN pms.shots_on_target * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN pms.country_won = TRUE then 4
+                    ELSE 0
+                END) AS Points
+        
+        FROM player_match_stats pms
+        JOIN players p
+            ON pms.player_id = p.player_id
+        JOIN national_teams nt
+            ON p.national_team_id = nt.national_team_id
+        JOIN matches m
+            ON pms.match_id = m.match_id
+        WHERE p.player_id = %s
+        ORDER BY m.match_date;
+    """, (player_id,))
+    points_data = cur.fetchall()
+
+
+    cur.execute("""
+        SELECT nt1.country AS home_team, nt2.country AS away_team, match_date
+        FROM matches
+        JOIN national_teams nt1 ON matches.home_team_id = nt1.national_team_id
+        JOIN national_teams nt2 ON matches.away_team_id = nt2.national_team_id
+        WHERE match_id IN (
+            SELECT match_id
+            FROM player_match_stats
+            WHERE player_id = %s
+        );
+    """, (player_id,))
+    matches = cur.fetchall()
+
+
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return render_template(
+        "points-page".html,
+        fantasy_team_id = fantasy_team_id
+        )
 
 
 

@@ -142,6 +142,11 @@
                     onsubmit="return confirm('Are you sure you want to delete this team?');">
                     <button type="submit" class="remove-button">Delete team</button>
                 </form>
+
+                <a href="{{ url_for('team_stats', fantasy_team_id=fantasy_team_id) }}"><button>
+                    Buy team </button>
+                </a>
+
             </div>
         </div>
 
