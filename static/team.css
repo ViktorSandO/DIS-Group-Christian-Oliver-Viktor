@@ -695,3 +695,510 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ---------- CREATE TEAM PAGE ---------- */
+
+.create-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 28px;
+}
+
+.create-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.create-topbar h1 {
+    margin: 5px 0 0 0;
+    font-size: 34px;
+}
+
+.create-top-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.main-link-button,
+.secondary-link-button {
+    display: inline-block;
+    text-decoration: none;
+    font-weight: 900;
+    border-radius: 999px;
+    padding: 11px 18px;
+}
+
+.main-link-button {
+    background: #111;
+    color: white;
+}
+
+.secondary-link-button {
+    background: white;
+    color: #111;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
+}
+
+
+/* ---------- CREATE HERO ---------- */
+
+.create-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 26px;
+    padding: 36px;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.28), transparent 34%),
+        linear-gradient(135deg, #485b51, #006b34);
+    color: white;
+    margin-bottom: 26px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.22);
+}
+
+.create-hero h2 {
+    font-size: 46px;
+    margin: 6px 0 10px 0;
+}
+
+.budget-hero-card {
+    min-width: 190px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.38);
+    border-radius: 24px;
+    padding: 26px;
+    text-align: center;
+}
+
+.budget-hero-card span {
+    display: block;
+    font-size: 13px;
+    font-weight: 800;
+    opacity: 0.82;
+}
+
+.budget-hero-card strong {
+    display: block;
+    font-size: 46px;
+    line-height: 1;
+    margin-top: 8px;
+}
+
+
+/* ---------- CREATE SUMMARY ---------- */
+
+.create-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+}
+
+
+/* ---------- CREATE DASHBOARD ---------- */
+
+.create-dashboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 390px;
+    gap: 28px;
+    align-items: start;
+}
+
+.available-column {
+    min-width: 0;
+}
+
+.squad-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: sticky;
+    top: 20px;
+}
+
+
+/* ---------- PLAYER TOOLS ---------- */
+
+.player-tools {
+    background: white;
+    border-radius: 24px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.10);
+}
+
+.player-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 16px;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    margin-bottom: 14px;
+}
+
+.position-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-button {
+    border: none;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-weight: 900;
+    cursor: pointer;
+    background: #f0f0f0;
+    color: #111;
+}
+
+.filter-button.active {
+    background: #111;
+    color: white;
+}
+
+
+/* ---------- COUNTRY PANELS ---------- */
+
+.country-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.country-panel {
+    background: white;
+    border-radius: 24px;
+    padding: 0;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.10);
+    overflow: hidden;
+}
+
+.country-panel summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 20px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 900;
+}
+
+.country-panel summary::-webkit-details-marker {
+    display: none;
+}
+
+.country-panel summary span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.country-count {
+    font-size: 12px;
+    opacity: 0.65;
+    text-transform: uppercase;
+}
+
+.flag-icon {
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+
+/* ---------- PLAYER CARDS ---------- */
+
+.player-card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    padding: 0 20px 20px 20px;
+}
+
+.available-player-card {
+    background: #f6f6f6;
+    border-radius: 18px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid #e7e7e7;
+}
+
+.available-player-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.available-player-img {
+    width: 58px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #e6e6e6;
+    flex-shrink: 0;
+}
+
+.available-player-card h3 {
+    margin: 0 0 5px 0;
+    font-size: 15px;
+}
+
+.available-player-card p {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.75;
+    font-weight: 700;
+}
+
+.available-player-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.available-player-meta span {
+    background: #111;
+    color: white;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 5px 10px;
+    border-radius: 999px;
+}
+
+.available-player-meta strong {
+    font-size: 18px;
+}
+
+.add-player-button {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: #0b6a34;
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.add-player-button:hover {
+    background: #118645;
+}
+
+
+/* ---------- TEAM SIDEBAR ---------- */
+
+.team-name-display {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 14px;
+}
+
+.small-dark-button {
+    border: none;
+    border-radius: 999px;
+    padding: 9px 14px;
+    background: #111;
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.change-name-form {
+    display: none;
+    margin-top: 14px;
+}
+
+.change-name-form input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+}
+
+.change-name-form button {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: #111;
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+
+/* ---------- SQUAD SLOTS ---------- */
+
+.squad-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.position-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.position-heading {
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.65;
+}
+
+.squad-slot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 11px;
+    background: #f6f6f6;
+    border-radius: 16px;
+    padding: 10px;
+    border: 1px solid #e7e7e7;
+}
+
+.squad-slot.empty {
+    border: 2px dashed #ccc;
+    background: #fafafa;
+}
+
+.squad-player-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.squad-player-img {
+    width: 46px;
+    height: 46px;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #e6e6e6;
+    flex-shrink: 0;
+}
+
+.squad-player-main strong {
+    display: block;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.squad-player-main span {
+    display: block;
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top: 4px;
+}
+
+.small-remove-button {
+    border: none;
+    border-radius: 999px;
+    padding: 7px 10px;
+    background: #72020b;
+    color: white;
+    font-size: 11px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.empty-slot {
+    color: #777;
+    font-weight: 800;
+    padding: 8px 0;
+}
+
+
+/* ---------- SIDEBAR ACTIONS ---------- */
+
+.sidebar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.full-width-button,
+.full-width-link {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.remove-button {
+    border: none;
+    border-radius: 999px;
+    padding: 11px 16px;
+    background: #72020b;
+    color: white;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.remove-button:hover {
+    background: #a50310;
+}
+
+
+/* ---------- RESPONSIVE CREATE PAGE ---------- */
+
+@media (max-width: 1250px) {
+    .create-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .squad-sidebar {
+        position: static;
+    }
+
+    .player-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .create-topbar,
+    .create-hero {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .create-top-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .create-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .player-card-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .create-page {
+        padding: 16px;
+    }
+
+    .create-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .create-hero h2 {
+        font-size: 34px;
+    }
+}

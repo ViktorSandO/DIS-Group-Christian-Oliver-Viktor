@@ -2,156 +2,411 @@
 <html>
 <head>
     <title>World Cup Fantasy - Create Team</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='team.css') }}">
 </head>
-<body></body>
-<div class="team-page">
 
+<body>
 
-        <div class="players-section">
-            <h2>Available Players</h2>
+<div class="create-page">
 
-            {% for country, country_players in players_by_country.items() %}
-                <details class="country-table">
-                    <summary>
-                        <img 
-                        src="https://flagcdn.com/w40/{{ flags.get(country, 'un') }}.png"
-                        width="24"
-                        style="vertical-align: middle; margin-right: 6px;"
-                        >
-                        {{ country }}
-                </summary>
+    <!-- TOP BAR -->
+    <div class="create-topbar">
 
-                    <table>
-                        <tr>
-                            <th>Name</th>
-                            <th>Pos</th>
-                            <th>Price</th>
-                            <th></th>
-                        </tr>
-
-                        {% for player in country_players %}
-                        <tr>
-                            <td>
-                                <img 
-                                    src="{{ url_for('static', filename='player_images/' + (player.name|image_filename)) }}"
-                                    class="player-img"
-                                    onerror="this.style.display='none'"
-                                >
-                                    {{ player.name }}
-                            </td>
-                            <td>{{ player.position }}</td>
-                            <td>{{ player.price }}$</td>
-                            <td>
-                                <form action="/add-player/{{ player.player_id }}/{{ fantasy_team_id }}" method="POST">
-                                    <button type="submit">Add</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                </details>
-            {% endfor %}
+        <div>
+            <p class="eyebrow">Fantasy World Cup</p>
+            <h1>Create Your Team</h1>
         </div>
 
+        <div class="create-top-actions">
+            <a href="/login" class="secondary-link-button">Log out</a>
 
-        <div class="budget-box">
-            <h2>Budget</h2>
-            <p>Total budget: {{ budget }}$</p>
-            <p>Used budget: {{ used_budget }}$</p>
-            <p>Remaining budget: {{ remaining_budget }}$</p>
+            <a href="{{ url_for('team_stats', fantasy_team_id=fantasy_team_id) }}" class="main-link-button">
+                View Points & Stats
+            </a>
         </div>
-
-        
-        <div class="team-list">
-            <h2>Your Team: <strong>{{ team_name }}</strong></h2>
-
-
-            <div class="team-action-row">
-
-            <button type="button" onclick="showNameForm()">Change name</button>
-
-            <form id="change-name-form" 
-                action="/change-team-name/{{ fantasy_team_id }}" 
-                method="POST" 
-                style="display: none; margin-top: 10px;">
-
-                <input type="text" name="team_name" value="{{ team_name }}" required>
-                <button type="submit">Save</button>
-                <button type="button" onclick="hideNameForm()">Cancel</button>
-            </form>
-
-            <script>
-            function showNameForm() {
-                document.getElementById("change-name-form").style.display = "block";
-            }
-
-            function hideNameForm() {
-                document.getElementById("change-name-form").style.display = "none";
-            }
-            </script>
-
-            <form action="/remove-all/{{ fantasy_team_id }}" method="POST">
-                <button type="submit" class="remove-button">Remove all</button>
-            </form>
-
-            </div>
-    
-
-            {% for position, players in team_slots.items() %}
-                <h3>{{ position }}</h3>
-                {% for player in players %}
-                    <div class="team-slot">
-                        {% if player %}
-                            <div>
-                                <img
-                                    src="{{ url_for('static', filename='player_images/' + (player.name|image_filename)) }}"
-                                    class="team-player-img"
-                                    onerror="this.style.display='none'"
-                                    >
-                                <strong>{{ player[2] }}</strong><br>
-                                <span>
-                                    <img 
-                                        src="https://flagcdn.com/w40/{{ flags.get(player[4], 'un') }}.png"
-                                        width="24"
-                                        style="vertical-align: middle; margin-right: 6px;"
-                                    >
-                                        {{ player[4] }}
-                                </span>
-                            </div>
-
-                            <div>
-                                {{ player[5] }}$
-                            </div>
-
-                            <form action="/remove-player/{{ player[0] }}/{{ fantasy_team_id }}" method="POST">
-                                <button type="submit" class="remove-button">Remove</button>
-                            </form>
-                        {% else %}
-                            <div class="empty-slot">
-                                Empty {{ position }} slot
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% endfor %}
-            <div class="team-action-row">
-                <a href="/login"><button>Log out</button></a>
-
-                <form action="/delete-team/{{ fantasy_team_id }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this team?');">
-                    <button type="submit" class="remove-button">Delete team</button>
-                </form>
-
-                <a href="{{ url_for('team_stats', fantasy_team_id=fantasy_team_id) }}"><button>
-                    Buy team </button>
-                </a>
-
-            </div>
-        </div>
-
-
 
     </div>
+
+
+    <!-- HERO -->
+    <div class="create-hero">
+
+        <div>
+            <p class="eyebrow">Squad Builder</p>
+            <h2>{{ team_name }}</h2>
+            <p class="hero-subtitle">
+                Build your 11-player World Cup fantasy squad within the budget.
+            </p>
+        </div>
+
+        <div class="budget-hero-card">
+            <span>Remaining Budget</span>
+            <strong>{{ remaining_budget }}$</strong>
+        </div>
+
+    </div>
+
+
+    <!-- QUICK SUMMARY -->
+    <div class="create-summary">
+
+        <div class="summary-card">
+            <h3>Total Budget</h3>
+            <p>{{ budget }}$</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Used Budget</h3>
+            <p>{{ used_budget }}$</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Remaining</h3>
+            <p>{{ remaining_budget }}$</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>Players Selected</h3>
+            <p>{{ team_players|length }}/11</p>
+        </div>
+
+    </div>
+
+
+    <!-- MAIN DASHBOARD -->
+    <div class="create-dashboard">
+
+        <!-- LEFT: AVAILABLE PLAYERS -->
+        <div class="available-column">
+
+            <div class="section-title">
+                <div>
+                    <p class="eyebrow">Transfers</p>
+                    <h2>Available Players</h2>
+                </div>
+
+                <p>Search, filter and add players to your fantasy squad.</p>
+            </div>
+
+
+            <!-- SEARCH + FILTERS -->
+            <div class="player-tools">
+
+                <input 
+                    type="text" 
+                    id="player-search" 
+                    placeholder="Search player, country or position..."
+                    class="player-search-input"
+                >
+
+                <div class="position-filters">
+                    <button type="button" class="filter-button active" data-position="ALL">All</button>
+                    <button type="button" class="filter-button" data-position="GK">GK</button>
+                    <button type="button" class="filter-button" data-position="DEF">DEF</button>
+                    <button type="button" class="filter-button" data-position="MID">MID</button>
+                    <button type="button" class="filter-button" data-position="FWD">FWD</button>
+                </div>
+
+            </div>
+
+
+            <!-- COUNTRY PANELS -->
+            <div class="country-panels">
+
+                {% for country, country_players in players_by_country.items() %}
+
+                    <details class="country-panel" data-country="{{ country }}">
+                        <summary>
+                            <span>
+                                <img 
+                                    src="https://flagcdn.com/w40/{{ flags.get(country, 'un') }}.png"
+                                    width="24"
+                                    class="flag-icon"
+                                >
+                                {{ country }}
+                            </span>
+
+                            <span class="country-count">
+                                {{ country_players|length }} players
+                            </span>
+                        </summary>
+
+                        <div class="player-card-grid">
+
+                            {% for player in country_players %}
+
+                                <div 
+                                    class="available-player-card"
+                                    data-name="{{ player.name|lower }}"
+                                    data-country="{{ country|lower }}"
+                                    data-position="{{ player.position }}"
+                                >
+
+                                    <div class="available-player-top">
+                                        <img 
+                                            src="{{ url_for('static', filename='player_images/' + (player.name|image_filename)) }}"
+                                            class="available-player-img"
+                                            onerror="this.style.display='none'"
+                                        >
+
+                                        <div>
+                                            <h3>{{ player.name }}</h3>
+
+                                            <p>
+                                                <img 
+                                                    src="https://flagcdn.com/w40/{{ flags.get(country, 'un') }}.png"
+                                                    width="16"
+                                                    class="flag-icon"
+                                                >
+                                                {{ country }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="available-player-meta">
+                                        <span>{{ player.position }}</span>
+                                        <strong>{{ player.price }}$</strong>
+                                    </div>
+
+                                    <form action="/add-player/{{ player.player_id }}/{{ fantasy_team_id }}" method="POST">
+                                        <button type="submit" class="add-player-button">
+                                            Add Player
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </details>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT: TEAM SIDEBAR -->
+        <div class="squad-sidebar">
+
+            <!-- TEAM NAME CARD -->
+            <div class="side-card">
+                <h3>Your Team</h3>
+
+                <div class="team-name-display">
+                    {{ team_name }}
+                </div>
+
+                <button type="button" class="small-dark-button" onclick="showNameForm()">
+                    Change Name
+                </button>
+
+                <form 
+                    id="change-name-form"
+                    action="/change-team-name/{{ fantasy_team_id }}" 
+                    method="POST"
+                    class="change-name-form"
+                >
+                    <input type="text" name="team_name" value="{{ team_name }}" required>
+                    <button type="submit">Save</button>
+                    <button type="button" onclick="hideNameForm()">Cancel</button>
+                </form>
+            </div>
+
+
+            <!-- BUDGET CARD -->
+            <div class="side-card">
+                <h3>Budget</h3>
+
+                <div class="side-stat-row">
+                    <span>Total</span>
+                    <strong>{{ budget }}$</strong>
+                </div>
+
+                <div class="side-stat-row">
+                    <span>Used</span>
+                    <strong>{{ used_budget }}$</strong>
+                </div>
+
+                <div class="side-stat-row">
+                    <span>Remaining</span>
+                    <strong>{{ remaining_budget }}$</strong>
+                </div>
+            </div>
+
+
+            <!-- FORMATION CARD -->
+            <div class="side-card">
+                <h3>Squad</h3>
+
+                <div class="squad-slots">
+
+                    {% for position, players in team_slots.items() %}
+
+                        <div class="position-group">
+                            <div class="position-heading">
+                                {{ position }}
+                            </div>
+
+                            {% for player in players %}
+
+                                <div class="squad-slot {% if not player %}empty{% endif %}">
+
+                                    {% if player %}
+
+                                        <div class="squad-player-main">
+
+                                            <img
+                                                src="{{ url_for('static', filename='player_images/' + (player.name|image_filename)) }}"
+                                                class="squad-player-img"
+                                                onerror="this.style.display='none'"
+                                            >
+
+                                            <div>
+                                                <strong>{{ player[2] }}</strong>
+
+                                                <span>
+                                                    <img 
+                                                        src="https://flagcdn.com/w40/{{ flags.get(player[4], 'un') }}.png"
+                                                        width="16"
+                                                        class="flag-icon"
+                                                    >
+                                                    {{ player[4] }} · {{ player[5] }}$
+                                                </span>
+                                            </div>
+
+                                        </div>
+
+                                        <form action="/remove-player/{{ player[0] }}/{{ fantasy_team_id }}" method="POST">
+                                            <button type="submit" class="small-remove-button">
+                                                Remove
+                                            </button>
+                                        </form>
+
+                                    {% else %}
+
+                                        <div class="empty-slot">
+                                            Empty {{ position }} slot
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+            </div>
+
+
+            <!-- ACTIONS CARD -->
+            <div class="side-card">
+                <h3>Actions</h3>
+
+                <div class="sidebar-actions">
+
+                    <form action="/remove-all/{{ fantasy_team_id }}" method="POST">
+                        <button type="submit" class="remove-button full-width-button">
+                            Remove All Players
+                        </button>
+                    </form>
+
+                    <form 
+                        action="/delete-team/{{ fantasy_team_id }}" 
+                        method="POST"
+                        onsubmit="return confirm('Are you sure you want to delete this team?');"
+                    >
+                        <button type="submit" class="remove-button full-width-button">
+                            Delete Team
+                        </button>
+                    </form>
+
+                    <a href="{{ url_for('team_stats', fantasy_team_id=fantasy_team_id) }}" class="main-link-button full-width-link">
+                        View Points & Stats
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+function showNameForm() {
+    document.getElementById("change-name-form").style.display = "block";
+}
+
+function hideNameForm() {
+    document.getElementById("change-name-form").style.display = "none";
+}
+
+
+// Remember which country panels were open before page reload
+document.querySelectorAll(".country-panel").forEach(panel => {
+    const country = panel.dataset.country;
+    const key = "open-country-" + country;
+
+    if (localStorage.getItem(key) === "true") {
+        panel.open = true;
+    }
+
+    panel.addEventListener("toggle", () => {
+        localStorage.setItem(key, panel.open);
+    });
+});
+
+
+// Search + position filter
+const searchInput = document.getElementById("player-search");
+const filterButtons = document.querySelectorAll(".filter-button");
+let activePosition = "ALL";
+
+function filterPlayers() {
+    const searchValue = searchInput.value.toLowerCase();
+
+    document.querySelectorAll(".available-player-card").forEach(card => {
+        const name = card.dataset.name;
+        const country = card.dataset.country;
+        const position = card.dataset.position;
+
+        const matchesSearch =
+            name.includes(searchValue) ||
+            country.includes(searchValue) ||
+            position.toLowerCase().includes(searchValue);
+
+        const matchesPosition =
+            activePosition === "ALL" || position === activePosition;
+
+        if (matchesSearch && matchesPosition) {
+            card.style.display = "flex";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+searchInput.addEventListener("input", filterPlayers);
+
+filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        activePosition = button.dataset.position;
+        filterPlayers();
+    });
+});
+</script>
+
 </body>
 </html>

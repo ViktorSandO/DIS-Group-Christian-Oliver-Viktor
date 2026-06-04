@@ -9,6 +9,9 @@ from datetime import date, timedelta
 app = Flask(__name__)
 
 
+username_pattern = re.compile(r"^[A-Za-z0-9_]{5,15}$")
+password_pattern = re.compile(r"^(?=.*[A-Za-z])(?=.*\d).{6,}$")
+
 current_date = date(2022, 12, 2) # Current date restriction to pull played matches
 
 app.secret_key = "secret"
@@ -76,9 +79,15 @@ def previous_day(fantasy_team_id):
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = request.form["password"]
         team_name = request.form["team_name"]
+
+        if not username_pattern.fullmatch(username):
+            return render_template("home.html", error="Username must be 5-15 characters long and can only contain letters, numbers, and underscores.")
+
+        if not password_pattern.fullmatch(password):
+            return render_template("home.html", error="Password must be at least 6 characters long and contain both letters and numbers.")
 
         conn = get_db_connection()
         cur = conn.cursor()
@@ -486,6 +495,8 @@ def team_stats(fantasy_team_id):
         if current_date <= date(2022, 12, 6)
         else date(2022, 12, 10)
         if current_date <= date(2022, 12, 10)
+        else date(2022, 12, 14)
+        if current_date <= date(2022, 12, 14)
         else date(2022, 12, 18)
     )
 
@@ -507,19 +518,80 @@ def team_stats(fantasy_team_id):
     # Selected players on fantasy team
     cur.execute("""
         SELECT
+            SUM(
+                CASE
+                    WHEN p.position = 'FWD' THEN pms.goals * 7
+                    ELSE pms.goals * 5
+                END
+                
+                + CASE
+                    WHEN p.position = 'MID' THEN pms.assists * 4
+                    ELSE pms.assists * 3
+                END
+                
+                + pms.saves * 1
+                
+                + pms.penalty_saves * 3
+                
+                + CASE
+                    WHEN p.position IN ('GK', 'DEF') AND pms.clean_sheet = TRUE THEN 4
+                    WHEN p.position = 'MID' AND pms.clean_sheet = TRUE THEN 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'DEF' THEN pms.successful_tackles * 2
+                    WHEN p.position = 'MID' THEN pms.successful_tackles * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'MID' THEN pms.key_passes * 2
+                    WHEN p.position = 'DEF' THEN pms.key_passes * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'FWD' THEN pms.shots_on_target * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN pms.country_won = TRUE then 4
+                    ELSE 0
+                END) AS points,
             p.player_id,
             p.name,
             p.position,
             nt.country,
             p.price
         FROM fantasy_team_players ftp
-        JOIN players p
-            ON ftp.player_id = p.player_id
-        JOIN national_teams nt
-            ON p.national_team_id = nt.national_team_id
-        WHERE ftp.fantasy_team_id = %s
-        ORDER BY p.position, p.name;
-    """, (fantasy_team_id,))
+    JOIN players p
+        ON ftp.player_id = p.player_id
+    JOIN national_teams nt
+        ON p.national_team_id = nt.national_team_id
+
+    LEFT JOIN player_match_stats pms
+        ON p.player_id = pms.player_id
+        AND pms.match_id IN (
+            SELECT match_id
+            FROM matches
+            WHERE match_date <= %s
+        )
+    LEFT JOIN matches m
+        ON pms.match_id = m.match_id
+
+    WHERE ftp.fantasy_team_id = %s
+
+    GROUP BY
+        p.player_id,
+        p.name,
+        p.position,
+        nt.country,
+        p.price
+
+    ORDER BY p.position, p.name;
+    """, (current_date, fantasy_team_id))
     team_players = cur.fetchall()
 
     team_slots = {
@@ -574,9 +646,70 @@ def team_stats(fantasy_team_id):
         JOIN national_teams nt2
             ON m.away_team_id = nt2.national_team_id
         WHERE m.match_date <= %s
+        AND m.match_date >= %s
         ORDER BY m.match_date;
-    """, (current_round,))
+    """, (current_round, current_date))
     upcoming_matches = cur.fetchall()
+
+
+    # Total points
+    cur.execute("""
+        SELECT
+            SUM(
+                CASE
+                    WHEN p.position = 'FWD' THEN pms.goals * 7
+                    ELSE pms.goals * 5
+                END
+                
+                + CASE
+                    WHEN p.position = 'MID' THEN pms.assists * 4
+                    ELSE pms.assists * 3
+                END
+                
+                + pms.saves * 1
+                
+                + pms.penalty_saves * 3
+                
+                + CASE
+                    WHEN p.position IN ('GK', 'DEF') AND pms.clean_sheet = TRUE THEN 4
+                    WHEN p.position = 'MID' AND pms.clean_sheet = TRUE THEN 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'DEF' THEN pms.successful_tackles * 2
+                    WHEN p.position = 'MID' THEN pms.successful_tackles * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'MID' THEN pms.key_passes * 2
+                    WHEN p.position = 'DEF' THEN pms.key_passes * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN p.position = 'FWD' THEN pms.shots_on_target * 1
+                    ELSE 0
+                END
+                
+                + CASE
+                    WHEN pms.country_won = TRUE then 4
+                    ELSE 0
+                END) AS total_points
+        
+        FROM player_match_stats pms
+        JOIN players p
+            ON pms.player_id = p.player_id
+        JOIN fantasy_team_players ftp
+            ON p.player_id = ftp.player_id
+        JOIN matches m
+            ON pms.match_id = m.match_id
+        WHERE ftp.fantasy_team_id = %s
+        AND m.match_date <= %s;
+    """, (fantasy_team_id, current_date))
+    total_points = cur.fetchone()[0]
+
 
     cur.close()
     conn.close()
@@ -596,12 +729,14 @@ def team_stats(fantasy_team_id):
         flags=flags,
 
         # Empty placeholders for now
-        total_points=None,
+        total_points=total_points,
         games_played=len(matches),
-        best_player=None,
-        team_stats=[],
+        best_player=max(team_players, key=lambda x: x["points"] or 0)["name"] if team_players else None,
+        team_stats=sorted(team_players, key=lambda x: x["points"] or 0, reverse=True)[:5],
         raw_stats=[]
     )
+
+
 
 
 
@@ -705,10 +840,7 @@ def points_per_match(player_id, fantasy_team_id):
     cur.close()
     conn.close()
 
-    return render_template(
-        "points-page".html,
-        fantasy_team_id = fantasy_team_id
-        )
+    return redirect(url_for("team_stats", fantasy_team_id=fantasy_team_id))
 
 
 
