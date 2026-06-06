@@ -1202,3 +1202,89 @@ body {
         font-size: 34px;
     }
 }
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 24px;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    max-width: 1000px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    border: none;
+    background: transparent;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.details-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 3px 7px;
+
+    background: #114509;
+    color: white;
+
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    box-shadow: 0 6px 14px rgba(17, 24, 39, 0.18);
+}
+
+.details-btn:hover {
+    background: #126e24;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(20, 117, 36, 0.28);
+}
+
+.details-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(26, 93, 14, 0.18);
+}
+
+.leaderboard-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.team-modal-content {
+    max-width: 1150px;
+}
+
+.modal-pitch {
+    min-height: 720px;
+}
+
+.modal-pitch .lineup-card {
+    transform: scale(0.9);
+}

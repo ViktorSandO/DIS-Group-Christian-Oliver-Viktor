@@ -202,6 +202,99 @@ INSERT INTO players (player_id, national_team_id, name, position, price) VALUES 
 INSERT INTO players (player_id, national_team_id, name, position, price) VALUES (175, 7, 'Yuto Nagatomo', 'DEF', 5);
 INSERT INTO players (player_id, national_team_id, name, position, price) VALUES (176, 3, 'eder Gabriel Militao', 'DEF', 9);
 
+
+
+-- DEMO USERS + DEMO TEAMS FOR LEADERBOARD
+
+INSERT INTO users (username, password)
+VALUES
+    ('Tryhard', 'demo123'),
+    ('Trump', 'demo123'),
+    ('Noob', 'demo123');
+
+
+INSERT INTO fantasy_teams (user_id, team_name)
+SELECT user_id, 'Dream Team'
+FROM users
+WHERE username = 'Tryhard';
+
+INSERT INTO fantasy_teams (user_id, team_name)
+SELECT user_id, 'American Eagles'
+FROM users
+WHERE username = 'Trump';
+
+INSERT INTO fantasy_teams (user_id, team_name)
+SELECT user_id, 'Noob FC'
+FROM users
+WHERE username = 'Noob';
+
+
+
+INSERT INTO fantasy_team_players (fantasy_team_id, player_id)
+SELECT ft.fantasy_team_id, p.player_id
+FROM fantasy_teams ft
+JOIN players p
+    ON p.name IN (
+        'Kylian Mbappe Lottin',
+        'Lionel Andres Messi Cuccittini',
+        'Dominik Livakovic',
+        'Alexis Mac Allister',
+        'Antoine Griezmann',
+        'Aurelien Djani Tchouameni',
+        'Rodrigo Javier De Paul',
+        'Achraf Hakimi Mouh',
+        'Daley Blind',
+        'Theo Bernard Francois Hernandez',
+        'Yahia Attiyat allah'
+    )
+WHERE ft.team_name = 'Dream Team';
+
+
+
+
+INSERT INTO fantasy_team_players (fantasy_team_id, player_id)
+SELECT ft.fantasy_team_id, p.player_id
+FROM fantasy_teams ft
+JOIN players p
+    ON p.name IN (
+        'Christian Pulisic',
+        'Jesus Ferreira',
+        'Matthew Charles Turner',
+        'Tyler Adams',
+        'Weston McKennie',
+        'Yunus Dimoara Musah',
+        'Antonee Robinson',
+        'Sergino Dest',
+        'Declan Rice',
+        'Tim Ream',
+        'Walker Zimmerman'
+    )
+WHERE ft.team_name = 'American Eagles';
+
+
+INSERT INTO fantasy_team_players (fantasy_team_id, player_id)
+SELECT ft.fantasy_team_id, p.player_id
+FROM fantasy_teams ft
+JOIN players p
+    ON p.name IN (
+        'Andrej Kramaric',
+        'Daichi Kamada',
+        'Remo Freuler',
+        'Junya Ito',
+        'Edimilson Fernandes',
+        'Aymeric Laporte',
+        'Aaron Mooy',
+        'Edouard Mendy',
+        'Pablo Martin PAez Gavira',
+        'Ismail Jakobs',
+        'Grzegorz Krychowiak'
+    )
+WHERE ft.team_name = 'Noob FC';
+
+
+
+
+
 INSERT INTO matches (match_id, home_team_id, away_team_id, match_date, home_score, away_score) VALUES (1, 1, 2, '2022-12-03', 2, 1);
 INSERT INTO matches (match_id, home_team_id, away_team_id, match_date, home_score, away_score) VALUES (2, 9, 1, '2022-12-09', 2, 2);
 INSERT INTO matches (match_id, home_team_id, away_team_id, match_date, home_score, away_score) VALUES (3, 8, 11, '2022-12-10', 1, 0);
