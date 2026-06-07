@@ -1,177 +1,102 @@
-# Databases and Information Systems
+# World Cup Fantasy Football App
 
-Dette repository indeholder fundamentet til vores projekt i kurset **Databases and Information Systems**.
+## Description
 
-Projektet er lige nu sat op som et simpelt lokalt udviklingsmiljø med:
+Thi project is a web-app game for a World Cup fantasy football game. The app allows users to create their own user and then create a fantasy team, where they can add and remove players, given a specific budget, view the player statistics, and from these statistics get fantasy points for each round, from their players.
 
-- **Python**
-- **Flask**
-- **PostgreSQL**
+It is built on Python, using Flask, PostgeSQL, HTML, and CSS. For practical reasons, the current data is based on the World Cup 2022 playoffs round.
 
-Målet med dette repository er at give gruppen et fælles udgangspunkt, som vi kan bygge videre på.
+## Database Model
 
-## Status lige nu
+The database schema, consists of tables for users, fantasy teams, fantasy team players, national teams, players, matches, and player specific match statistics.
 
-Følgende er på plads:
-
-- Schema med små tweaks i forhold til præsentation
-- Data fra WC 2022 playoffs
+The E/R diagram can be found as ER_diagram.png
 
 
-- et virtuelt Python-miljø (`.venv`)
-- installation af nødvendige Python-pakker
-- en lokal PostgreSQL-database
-- en Flask-app i `app.py`
-- forbindelse mellem Flask og PostgreSQL via `SQLAlchemy`
-- miljøvariabler via `.env`
-- en testside for Flask
-- en testside for databaseforbindelsen
+## Requirements
 
-Det betyder, at projektet **ikke** er færdigt endnu, men at fundamentet virker og er klar til videre udvikling.
-
-## Projektstruktur
-
-Projektet ser lige nu cirka sådan ud:
-
-```text
-Databases and Information Systems/
-├── app.py
-├── requirements.txt
-├── README.md
-├── .env.example
-├── .gitignore
-└── .venv/
-```
-
-Bemærk:
-
-- `.venv/` er kun lokal og skal ikke på GitHub
-- `.env` er kun lokal og skal ikke på GitHub
-
-## Krav
-
-For at køre projektet lokalt skal du have følgende installeret:
-
-- Python 3
-- PostgreSQL
-- Git
-
-På Mac kan PostgreSQL f.eks. installeres med Homebrew.
+To run the app you must have python 3, PostgreSQL, pip and installed the packages listed in requirements.txt
 
 
-## Miljøvariabler
+## Setup
 
-Opret en lokal fil med navnet `.env` i projektmappen.
+### 1. Clone the repository
 
-Indsæt følgende:
+Run following command in your terminal:
+#### 1.
+git clone https://github.com/ViktorSandO/DIS-Group-Christian-Oliver-Viktor.git
 
-```env
-DATABASE_URL=postgresql+psycopg://plt271:tlbjwfplt@localhost:5432/dis_db
-FLASK_APP=app.py
-FLASK_DEBUG=1
-```
+#### 2.
+cd DIS-Group-Christian-Oliver-Viktor
 
-### Forklaring
 
-- `DATABASE_URL` er forbindelsen til PostgreSQL
-- `FLASK_APP=app.py` fortæller Flask, hvor appen ligger
-- `FLASK_DEBUG=1` tænder debug mode under udvikling
+### 2. Install Python packages
 
-## Kør projektet
+Run:
 
-Når `.venv` er aktivt, start appen med:
+pip install -r requirements.txt
 
-```bash
-flask run
-```
 
-Hvis det virker, vil du typisk se noget ala:
+### 3. Create the PostgreSQL database
 
-```text
-* Running on http://127.0.0.1:5000
-```
+Run:
 
-## Test at det virker
+psql -U postgres -c "CREATE DATABASE worldcup_fantasy;
 
-Åbn derefter i browseren:
 
-```text
-http://localhost:5000/
-```
+### 4. Initialize the database
 
-Den side skal returnere:
 
-```text
-Flask virker
-```
+#### 1. Run the schema file:
 
-Test derefter databaseforbindelsen på:
+psql -U postgres -d worldcup_fantasy -f sql/schema.sql
 
-```text
-http://localhost:5000/db-test
-```
+#### 2. Run the seed/data file:
 
-Den side skal returnere:
+psql -U postgres -d worldcup_fantasy -f sql/seed.sql
 
-```text
-PostgreSQL-forbindelse virker
-```
 
-Hvis Chrome giver problemer lokalt, kan Safari bruges i stedet.
+### 5. Run the app
 
-## Filer der ikke skal på GitHub
+#### 1. Run:
+python app.py
 
-Disse skal ikke pushes:
 
-```text
-.venv/
-.env
-__pycache__/
-```
+#### 2. Then open the app in a browser:
 
-Det håndteres via `.gitignore`.
+http://127.0.0.1:5000
 
-Et passende indhold til `.gitignore` er:
+## How to Use the App
 
-```gitignore
-.venv/
-.env
-__pycache__/
-*.pyc
-.DS_Store
-```
+1. Open the app in your browser.
+2. Log in or create a user.
+3. Create or manage your fantasy team.
+4. Add players from the available player list.
+5. Remove players from your team if needed.
+6. Use the country lists and filters to browse available players.
+7. Change the current round to simulate the tournament progression.
+8. View the leaderboard to compare teams.
+9. Click the view button on the leaderboard to inspect another team's players and points.
 
-## Hvad fundamentet indeholder
+## SQL Usage
 
-Dette fundament giver os:
+The application interacts with the PostgreSQL database using SQL queries through psycopg2.
 
-- en kørende Flask-server
-- en kørende PostgreSQL-forbindelse
-- en projektstruktur, som gruppen kan clone
-- et udgangspunkt til at bygge modeller, tabeller, routes og funktionalitet ovenpå
+The app makes use of several different types of SQL queries, to pull
+data used on the different pages, such as the player list, the fantasy team page, and the leaderboard. We also use SQL queries to insert the data into the database, such as when creating a user, fantasy team, or removing or adding players to the team. The initial data is also inserted using SQL queries in the seed.sql file. Which is generated using a Python script that reads data from CSV files and generates the SQL insert statements.
 
-## Hvad der mangler
+## Regular Expression Usage
 
-Følgende dele skal stadig udvikles i selve projektet:
+The app uses regular expressions to validate user inputs, such as usernames, passwords, and team names, to ensure that they meet criteria such as length and allowed characters. This is done using the python re module.
 
-- datamodel
-- tabeller
-- E/R-diagram
-- egentlig funktionalitet i webappen
-- SQL-forespørgsler til rigtige data
-- eventuel regex/grammar-del
-- dokumentation til aflevering
 
-## Næste skridt
+## AI Declaration
 
-Et naturligt næste skridt er at udvide projektet med:
+We have used ChatGPT to assist us in the development of this project. The main use of ChatGPT has been for help with the HTML/CSS layout, and making the pages look better. We have our self come up with the general structure of the HTML pages, in form of simple lists of what we want on the pages, and then used ChatGPT to help us making the lists and layouts of the pages look better. The app itself is built by us, and all the code is written by us. It initially helped us with a simple structure for the Flask app, and then we have built on top of that structure. We have then also under the development used it for help with debugging, when running in to issues we could not resolve ourselves.
 
-- en bedre mappestruktur
-- de første databasedefinerede modeller
-- oprettelse af tabeller
-- simple CRUD-funktioner
-- fælles arbejdsflow i GitHub
 
-## Bemærkning
+## Group Members
 
-Dette repository er altså **fundamentet** for projektet — ikke den færdige løsning.
+* Christian
+* Oliver
+* Viktor

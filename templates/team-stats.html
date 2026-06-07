@@ -38,7 +38,7 @@
     <div class="stats-hero">
 
         <div>
-            <p class="eyebrow">Fantasy World Cup</p>
+            <p class="eyebrow">Fantasy World Cup 2022 playoffs</p>
             <h1>{{ team_name if team_name is defined else "Your Team" }}</h1>
             <p class="hero-subtitle">
                 Points, games and player stats for your selected fantasy team.
@@ -79,13 +79,13 @@
                         <div class="upcoming-teams">
                             
                             <img 
-                                src="https://flagcdn.com/w40/{{ flags.get(match.away_team, 'un') }}.png"
+                                src="https://flagcdn.com/w40/{{ flags.get(match.home_team, 'un') }}.png"
                                 width="22"
                                 style="vertical-align: middle; margin-right: 6px;"
                             >{{ match.home_team }}
                             vs <br>
                             <img 
-                                src="https://flagcdn.com/w40/{{ flags.get(match.home_team, 'un') }}.png"
+                                src="https://flagcdn.com/w40/{{ flags.get(match.away_team, 'un') }}.png"
                                 width="22"
                                 style="vertical-align: middle; margin-right: 6px;"
                             >{{ match.away_team }}
@@ -148,9 +148,13 @@
                                         style="vertical-align: middle; margin-right: 6px;"
                                     >{{ player.country }} · {{ player.position }}</div>
 
-                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                    <button
+                                        type="button"
+                                        class="details-btn"
+                                        onclick="openPlayerDetails('{{ player.player_id }}')"
+                                    >
                                         Details
-                                    </a>
+                                    </button>
 
                                     <div class="next-opponent">
                                         Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
@@ -188,9 +192,13 @@
                                         style="vertical-align: middle; margin-right: 6px;"
                                     >{{ player.country }} · {{ player.position }}</div>
 
-                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                    <button
+                                        type="button"
+                                        class="details-btn"
+                                        onclick="openPlayerDetails('{{ player.player_id }}')"
+                                    >
                                         Details
-                                    </a>
+                                    </button>
 
                                     <div class="next-opponent">
                                         Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
@@ -228,9 +236,13 @@
                                         style="vertical-align: middle; margin-right: 6px;"
                                     >{{ player.country }} · {{ player.position }}</div>
 
-                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                    <button
+                                        type="button"
+                                        class="details-btn"
+                                        onclick="openPlayerDetails('{{ player.player_id }}')"
+                                    >
                                         Details
-                                    </a>
+                                    </button>
 
                                     <div class="next-opponent">
                                         Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
@@ -268,9 +280,13 @@
                                         style="vertical-align: middle; margin-right: 6px;"
                                     >{{ player.country }} · {{ player.position }}</div>
 
-                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}" class="small-details-link">
+                                    <button
+                                        type="button"
+                                        class="details-btn"
+                                        onclick="openPlayerDetails('{{ player.player_id }}')"
+                                    >
                                         Details
-                                    </a>
+                                    </button>
 
                                     <div class="next-opponent">
                                         Next: {{ player.next_opponent if player.next_opponent is defined else "-" }}
@@ -303,55 +319,7 @@
                     <span>Games Played</span>
                     <strong>{{ games_played if games_played is defined else "-" }}</strong>
                 </div>
-
-                <div class="side-stat-row">
-                    <span>Players Selected</span>
-                    <strong>{{ team_players|length if team_players is defined else "-" }}</strong>
-                </div>
-
-                <div class="side-stat-row">
-                    <span>Best Player</span>
-                    <strong>{{ best_player if best_player is defined and best_player else "-" }}</strong>
-                </div>
             </div>
-
-
-            <div class="side-card">
-                <h3>Points by Position</h3>
-
-                <div class="position-stat">
-                    <span>FWD</span>
-                    <div class="position-bar">
-                        <div class="position-bar-fill" style="width: 20%;"></div>
-                    </div>
-                    <strong>{{ fwd_points if fwd_points is defined else "-" }}</strong>
-                </div>
-
-                <div class="position-stat">
-                    <span>MID</span>
-                    <div class="position-bar">
-                        <div class="position-bar-fill" style="width: 20%;"></div>
-                    </div>
-                    <strong>{{ mid_points if mid_points is defined else "-" }}</strong>
-                </div>
-
-                <div class="position-stat">
-                    <span>DEF</span>
-                    <div class="position-bar">
-                        <div class="position-bar-fill" style="width: 20%;"></div>
-                    </div>
-                    <strong>{{ def_points if def_points is defined else "-" }}</strong>
-                </div>
-
-                <div class="position-stat">
-                    <span>GK</span>
-                    <div class="position-bar">
-                        <div class="position-bar-fill" style="width: 20%;"></div>
-                    </div>
-                    <strong>{{ gk_points if gk_points is defined else "-" }}</strong>
-                </div>
-            </div>
-
 
             <div class="side-card">
                 <h3>Top Players</h3>
@@ -366,6 +334,36 @@
                 {% else %}
                     <div class="empty-mini-card">
                         No player points yet.
+                    </div>
+                {% endif %}
+            </div>
+            <div class="side-card">
+                <h3>Leaderboard</h3>
+
+                {% if leaderboard is defined and leaderboard %}
+                    {% for team in leaderboard[:5] %}
+                        <div class="top-player-row {% if team.fantasy_team_id == fantasy_team_id %}current-team-row{% endif %}">
+                            <span>
+                                #{{ loop.index }} {{ team.team_name }}
+                                <small>{{ team.username }}</small>
+                            </span>
+
+                            <div class="leaderboard-actions">
+                                <strong>{{ team.total_points }} pts</strong>
+
+                                <button
+                                    type="button"
+                                    class="details-btn"
+                                    onclick="openTeamDetails('{{ team.fantasy_team_id }}')"
+                                >
+                                    View
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-mini-card">
+                        No leaderboard data yet.
                     </div>
                 {% endif %}
             </div>
@@ -397,8 +395,10 @@
                         <th>Points</th>
                         <th>Goals</th>
                         <th>Assists</th>
-                        <th>Clean Sheet</th>
-                        <th>Win</th>
+                        <th>Saves</th>
+                        <th>Penalty Saves</th>
+                        <th>Clean Sheets</th>
+                        <th>Country Wins</th>
                         <th>Details</th>
                     </tr>
                 </thead>
@@ -408,17 +408,27 @@
                         {% for player in team_stats %}
                             <tr>
                                 <td>{{ player.name }}</td>
-                                <td>{{ player.country }}</td>
+                                <td><img 
+                                        src="https://flagcdn.com/w40/{{ flags.get(player.country, 'un') }}.png"
+                                        width="16"
+                                        style="vertical-align: middle; margin-right: 6px;"
+                                    >{{ player.country }}</td>
                                 <td>{{ player.position }}</td>
                                 <td><strong>{{ player.points }}</strong></td>
                                 <td>{{ player.goals }}</td>
                                 <td>{{ player.assists }}</td>
-                                <td>{{ player.clean_sheet }}</td>
-                                <td>{{ player.country_won }}</td>
+                                <td>{{ player.saves }}</td>
+                                <td>{{ player.penalty_saves }}</td>
+                                <td>{{ player.clean_sheets }}</td>
+                                <td>{{ player.country_wins }}</td>
                                 <td>
-                                    <a href="/match/{{ player.player_id }}/{{ fantasy_team_id }}">
+                                    <button
+                                        type="button"
+                                        class="details-btn"
+                                        onclick="openPlayerDetails('{{ player.player_id }}')"
+                                    >
                                         View
-                                    </a>
+                                    </button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -511,31 +521,31 @@
 
             <div class="rule-card">
                 <h3>Goals</h3>
-                <p>FWD: -</p>
-                <p>MID/DEF/GK: -</p>
+                <p>FWD: 7 points</p>
+                <p>MID/DEF/GK: 5 points</p>
             </div>
 
             <div class="rule-card">
                 <h3>Assists</h3>
-                <p>MID: -</p>
-                <p>Others: -</p>
+                <p>MID: 4 points</p>
+                <p>Others: 3 points</p>
             </div>
 
             <div class="rule-card">
                 <h3>Defensive</h3>
-                <p>Clean sheet: -</p>
-                <p>Tackles: -</p>
+                <p>Clean sheet: 4 points</p>
+                <p>Tackles: 2 points (DEF), 1 point (MID)</p>
             </div>
 
             <div class="rule-card">
                 <h3>Goalkeeper</h3>
-                <p>Saves: -</p>
-                <p>Penalty saves: -</p>
+                <p>Saves: 1 point</p>
+                <p>Penalty saves: 3 points</p>
             </div>
 
             <div class="rule-card">
                 <h3>Team Result</h3>
-                <p>Country win: -</p>
+                <p>Country win: 4 points</p>
             </div>
 
         </div>
@@ -543,6 +553,214 @@
     </div>
 
 </div>
+
+
+<div id="player-details-modal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modal-player-name">Player Details</h2>
+
+            <button type="button" class="close-btn" onclick="closePlayerDetails()">
+                ×
+            </button>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Match</th>
+                        <th>Goals</th>
+                        <th>Assists</th>
+                        <th>Saves</th>
+                        <th>Penalty Saves</th>
+                        <th>Tackles</th>
+                        <th>Key Passes</th>
+                        <th>Shots on Target</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+
+                <tbody id="player-details-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="team-details-modal" class="modal hidden">
+    <div class="modal-content team-modal-content">
+        <div class="modal-header">
+            <div>
+                <p class="eyebrow">Leaderboard Team</p>
+                <h2 id="team-modal-title">Team Details</h2>
+                <p id="team-modal-subtitle" class="hero-subtitle"></p>
+            </div>
+
+            <button type="button" class="close-btn" onclick="closeTeamDetails()">
+                ×
+            </button>
+        </div>
+
+        <div class="football-pitch modal-pitch">
+
+            <div class="pitch-line forwards" id="modal-fwd-line"></div>
+
+            <div class="pitch-line midfielders" id="modal-mid-line"></div>
+
+            <div class="pitch-line defenders" id="modal-def-line"></div>
+
+            <div class="pitch-line goalkeeper" id="modal-gk-line"></div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    const rawStats = {{ raw_stats | tojson }};
+
+    function openPlayerDetails(playerId) {
+        const modal = document.getElementById("player-details-modal");
+        const tableBody = document.getElementById("player-details-body");
+        const title = document.getElementById("modal-player-name");
+
+        const playerRows = rawStats.filter(stat => String(stat.player_id) === String(playerId));
+
+        tableBody.innerHTML = "";
+
+        if (playerRows.length === 0) {
+            title.textContent = "Player Details";
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="empty-row">
+                        No raw stats available for this player yet.
+                    </td>
+                </tr>
+            `;
+        } else {
+            title.textContent = playerRows[0].name + " - Raw Stats";
+
+            playerRows.forEach(stat => {
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${stat.match_name}</td>
+                        <td>${stat.goals}</td>
+                        <td>${stat.assists}</td>
+                        <td>${stat.saves}</td>
+                        <td>${stat.penalty_saves}</td>
+                        <td>${stat.successful_tackles}</td>
+                        <td>${stat.key_passes}</td>
+                        <td>${stat.shots_on_target}</td>
+                        <td><strong>${stat.points}</strong></td>
+                    </tr>
+                `;
+            });
+        }
+
+        modal.classList.remove("hidden");
+    }
+
+    function closePlayerDetails() {
+        document.getElementById("player-details-modal").classList.add("hidden");
+    }
+    const leaderboardPlayers = {{ leaderboard_players | tojson }};
+    const leaderboardTeams = {{ leaderboard | tojson }};
+    const flags = {{ flags | tojson }};
+
+    function makePlayerCard(player) {
+        if (!player) {
+            return `
+                <div class="lineup-card">
+                    <div class="empty-slot-text">Empty slot</div>
+                </div>
+            `;
+        }
+
+        const flagCode = flags[player.country] || "un";
+        const imageName = player.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9 ]/g, " ")
+            .trim()
+            .replace(/\s+/g, "_") + ".png";
+
+        return `
+            <div class="lineup-card">
+                <div class="player-points">
+                    ${player.points || 0} pts
+                </div>
+
+                <img
+                    src="/static/player_images/${imageName}"
+                    alt="${player.name}"
+                    class="lineup-player-img"
+                    onerror="this.style.display='none'"
+                >
+
+                <div class="lineup-player-name">${player.name}</div>
+
+                <div class="lineup-player-meta">
+                    <img
+                        src="https://flagcdn.com/w40/${flagCode}.png"
+                        width="16"
+                        style="vertical-align: middle; margin-right: 6px;"
+                    >
+                    ${player.country} · ${player.position}
+                </div>
+            </div>
+        `;
+    }
+
+    function fillLine(elementId, players, size) {
+        const line = document.getElementById(elementId);
+        line.innerHTML = "";
+
+        for (let i = 0; i < size; i++) {
+            line.innerHTML += makePlayerCard(players[i] || null);
+        }
+    }
+
+    function openTeamDetails(teamId) {
+        const modal = document.getElementById("team-details-modal");
+        const title = document.getElementById("team-modal-title");
+        const subtitle = document.getElementById("team-modal-subtitle");
+
+        const team = leaderboardTeams.find(t => String(t.fantasy_team_id) === String(teamId));
+
+        const players = leaderboardPlayers.filter(
+            player => String(player.fantasy_team_id) === String(teamId)
+        );
+
+        const fwd = players.filter(player => player.position === "FWD");
+        const mid = players.filter(player => player.position === "MID");
+        const def = players.filter(player => player.position === "DEF");
+        const gk = players.filter(player => player.position === "GK");
+
+        if (team) {
+            title.textContent = team.team_name;
+            subtitle.textContent = team.username + " · " + team.total_points + " pts";
+        } else {
+            title.textContent = "Team Details";
+            subtitle.textContent = "";
+        }
+
+        fillLine("modal-fwd-line", fwd, 2);
+        fillLine("modal-mid-line", mid, 4);
+        fillLine("modal-def-line", def, 4);
+        fillLine("modal-gk-line", gk, 1);
+
+        modal.classList.remove("hidden");
+    }
+
+    function closeTeamDetails() {
+        document.getElementById("team-details-modal").classList.add("hidden");
+    }
+</script>
+
 
 </body>
 </html>

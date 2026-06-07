@@ -14,8 +14,7 @@
 
     CREATE TABLE national_teams (
         national_team_id SERIAL PRIMARY KEY,
-        country TEXT NOT NULL UNIQUE,
-        group_name TEXT
+        country TEXT NOT NULL UNIQUE
     );
 
     CREATE TABLE players (
@@ -28,7 +27,7 @@
 
     CREATE TABLE fantasy_teams (
         fantasy_team_id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(user_id),
+        user_id INTEGER NOT NULL UNIQUE REFERENCES users(user_id),
         team_name TEXT NOT NULL,
         budget INTEGER NOT NULL DEFAULT 90
     );
