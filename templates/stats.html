@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Team Stats</title>
+</head>
+<body>
+
+<a href="{{ url_for('create_team', fantasy_team_id=fantasy_team_id) }}">Back to team</a>
+
+<form method="POST" action="{{ url_for('previous_day', fantasy_team_id=fantasy_team_id) }}">
+    <button type="submit">Previous Day</button>
+</form>
+
+<p>Current Date: {{ current_date if current_date is defined else "-" }}</p>
+
+<form method="POST" action="{{ url_for('next_day', fantasy_team_id=fantasy_team_id) }}">
+    <button type="submit">Next Day</button>
+</form>
+
+<h1>{{ team_name if team_name is defined else "Your Team" }}</h1>
+
+<p>Total Points: {{ total_points if total_points is defined and total_points is not none else 0 }}</p>
+<p>Games Played: {{ games_played if games_played is defined else 0 }}</p>
+
+<h2>Upcoming Games</h2>
+
+{% if upcoming_matches is defined and upcoming_matches %}
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Match</th>
+    </tr>
+    {% for match in upcoming_matches %}
+    <tr>
+        <td>{{ match.match_date }}</td>
+        <td>{{ match.home_team }} vs {{ match.away_team }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No upcoming games available yet.</p>
+{% endif %}
+
+<h2>Team Lineup</h2>
+
+{% if team_slots is defined %}
+
+<h3>FWD</h3>
+<ul>
+    {% for player in team_slots["FWD"] %}
+        {% if player %}
+        <li>{{ player.name }} - {{ player.country }} - {{ player.position }} - {{ player.points if player.points is defined and player.points is not none else 0 }} pts</li>
+        {% else %}
+        <li>Empty FWD</li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<h3>MID</h3>
+<ul>
+    {% for player in team_slots["MID"] %}
+        {% if player %}
+        <li>{{ player.name }} - {{ player.country }} - {{ player.position }} - {{ player.points if player.points is defined and player.points is not none else 0 }} pts</li>
+        {% else %}
+        <li>Empty MID</li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<h3>DEF</h3>
+<ul>
+    {% for player in team_slots["DEF"] %}
+        {% if player %}
+        <li>{{ player.name }} - {{ player.country }} - {{ player.position }} - {{ player.points if player.points is defined and player.points is not none else 0 }} pts</li>
+        {% else %}
+        <li>Empty DEF</li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+<h3>GK</h3>
+<ul>
+    {% for player in team_slots["GK"] %}
+        {% if player %}
+        <li>{{ player.name }} - {{ player.country }} - {{ player.position }} - {{ player.points if player.points is defined and player.points is not none else 0 }} pts</li>
+        {% else %}
+        <li>Empty GK</li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+{% else %}
+<p>No team lineup available.</p>
+{% endif %}
+
+<h2>Top Players</h2>
+
+{% if team_stats is defined and team_stats %}
+<ol>
+    {% for player in team_stats[:5] %}
+    <li>{{ player.name }} - {{ player.points }} pts</li>
+    {% endfor %}
+</ol>
+{% else %}
+<p>No player points yet.</p>
+{% endif %}
+
+<h2>Leaderboard</h2>
+
+{% if leaderboard is defined and leaderboard %}
+<table border="1">
+    <tr>
+        <th>Rank</th>
+        <th>Team</th>
+        <th>User</th>
+        <th>Points</th>
+    </tr>
+    {% for team in leaderboard %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ team.team_name }}</td>
+        <td>{{ team.username }}</td>
+        <td>{{ team.total_points if team.total_points is not none else 0 }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No leaderboard data yet.</p>
+{% endif %}
+
+<h2>Player Points</h2>
+
+{% if team_stats is defined and team_stats %}
+<table border="1">
+    <tr>
+        <th>Player</th>
+        <th>Country</th>
+        <th>Position</th>
+        <th>Points</th>
+        <th>Goals</th>
+        <th>Assists</th>
+        <th>Saves</th>
+        <th>Penalty Saves</th>
+        <th>Clean Sheets</th>
+        <th>Tackles</th>
+        <th>Key Passes</th>
+        <th>Shots on Target</th>
+        <th>Country Wins</th>
+    </tr>
+    {% for player in team_stats %}
+    <tr>
+        <td>{{ player.name }}</td>
+        <td>{{ player.country }}</td>
+        <td>{{ player.position }}</td>
+        <td>{{ player.points }}</td>
+        <td>{{ player.goals }}</td>
+        <td>{{ player.assists }}</td>
+        <td>{{ player.saves }}</td>
+        <td>{{ player.penalty_saves }}</td>
+        <td>{{ player.clean_sheets }}</td>
+        <td>{{ player.successful_tackles }}</td>
+        <td>{{ player.key_passes }}</td>
+        <td>{{ player.shots_on_target }}</td>
+        <td>{{ player.country_wins }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No player stats available yet.</p>
+{% endif %}
+
+<h2>Raw Stats</h2>
+
+{% if raw_stats is defined and raw_stats %}
+<table border="1">
+    <tr>
+        <th>Player</th>
+        <th>Match</th>
+        <th>Goals</th>
+        <th>Assists</th>
+        <th>Saves</th>
+        <th>Penalty Saves</th>
+        <th>Tackles</th>
+        <th>Key Passes</th>
+        <th>Shots on Target</th>
+        <th>Points</th>
+    </tr>
+    {% for stat in raw_stats %}
+    <tr>
+        <td>{{ stat.name }}</td>
+        <td>{{ stat.match_name }}</td>
+        <td>{{ stat.goals }}</td>
+        <td>{{ stat.assists }}</td>
+        <td>{{ stat.saves }}</td>
+        <td>{{ stat.penalty_saves }}</td>
+        <td>{{ stat.successful_tackles }}</td>
+        <td>{{ stat.key_passes }}</td>
+        <td>{{ stat.shots_on_target }}</td>
+        <td>{{ stat.points }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No raw stats available yet.</p>
+{% endif %}
+
+<h2>Point System</h2>
+
+<h3>Goals</h3>
+<p>FWD: 7 points</p>
+<p>MID/DEF/GK: 5 points</p>
+
+<h3>Assists</h3>
+<p>MID: 4 points</p>
+<p>Others: 3 points</p>
+
+<h3>Defensive</h3>
+<p>Clean sheet: 4 points for GK/DEF, 1 point for MID</p>
+<p>Tackles: 2 points for DEF, 1 point for MID</p>
+
+<h3>Goalkeeper</h3>
+<p>Saves: 1 point</p>
+<p>Penalty saves: 3 points</p>
+
+<h3>Attack</h3>
+<p>Key passes: 2 points for MID, 1 point for DEF</p>
+<p>Shots on target: 1 point for FWD</p>
+
+<h3>Team Result</h3>
+<p>Country win: 4 points</p>
+
+</body>
+</html>

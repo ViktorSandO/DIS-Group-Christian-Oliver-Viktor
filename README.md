@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 Run:
 
-psql -U postgres -c "CREATE DATABASE worldcup_fantasy;
+psql -U postgres -c "CREATE DATABASE worldcup_fantasy;"
 
 
 ### 4. Initialize the database
